@@ -2,7 +2,7 @@
 * QUANT README, 0.01
 ************************
 
-Compilation/construction instructions:
+Pre-compiler compilation (lol) instructions:
 
 If developing at the command line on a
 UNIX system:
