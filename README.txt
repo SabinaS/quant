@@ -13,7 +13,7 @@ UNIX system:
     change the directory of the 'jflex'
     variable to wherever you're storing
     your jflex .jar file.
-2.  Enter 'make lexer'; hit enter. (generates lexical
+2.  Enter 'make lexparse'; hit enter. (generates lexical
     analyzer from symbols.cup and lexer.jflex).
 
 (--Aubrey)
