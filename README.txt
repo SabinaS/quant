@@ -2,18 +2,16 @@
 * QUANT README, 0.01
 ************************
 
-Pre-compiler compilation (lol) instructions:
-
 If developing at the command line on a
 UNIX system:
 
-1.  Edit Makefile:  change the directory
-    of the 'cup' variable to wherever you're
-    storing your CUP .jar file.  Next,
-    change the directory of the 'jflex'
-    variable to wherever you're storing
-    your jflex .jar file.
-2.  Enter 'make lexparse'; hit enter. (generates lexical
-    analyzer from symbols.cup and lexer.jflex).
+1.  Pre-compiler compilation:
+	make lexparse
+2.  Compiler compilation:
+	make compiler
+3.  2-in-1:
+	make all
+4.  To run the compiler:
+	./compile.sh [filename]
 
 (--Aubrey)

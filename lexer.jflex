@@ -63,3 +63,4 @@ is		{ return getSymbol(sym.IS); }
 {integer}	{ return getSymbol(sym.INTEGER, new Integer(yytext())); }
 {identifier}	{ return getSymbol(sym.VARIABLE, yytext()); }
 {whitespace}	{ /* Ignore. */ }
+.		{ return getSymbol(sym.INVALID); }
