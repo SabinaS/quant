@@ -9,8 +9,11 @@ UNIX system:
 
 1.  Edit Makefile:  change the directory
     of the 'cup' variable to wherever you're
-    storing your CUP .jar file.
-2.  Enter:  Make lexer (generates lexical
+    storing your CUP .jar file.  Next,
+    change the directory of the 'jflex'
+    variable to wherever you're storing
+    your jflex .jar file.
+2.  Enter 'make lexer'; hit enter. (generates lexical
     analyzer from symbols.cup and lexer.jflex).
 
 (--Aubrey)
