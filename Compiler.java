@@ -14,7 +14,8 @@ public class Compiler {
         try {
             parser qParser = new parser (
                 new QuantLexer(new FileReader(args[0])));
-            qParser.parse();
+            // qParser.parse();
+            qParser.debug_parse();
         }
         catch (Exception e) {
             e.printStackTrace();
