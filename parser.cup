@@ -17,7 +17,6 @@ parser code {:
  */
 
 terminal VARIABLE;
-terminal INTEGER;
 terminal IS;
 terminal PERIOD;
 terminal PLUS;
@@ -27,10 +26,63 @@ terminal OVER;
 terminal PRINT;
 terminal INVALID;
 
-nonterminal identifier;
-/* 
+/*
+ * terminals with associated type values
+ */
+terminal String IDENTIFIER;
+terminal Integer INTEGER;
+
+/*
+ * non-terminals
+ */
+non terminal stmt;
+non terminal assignment;
+non terminal print;
+non terminal expr_list;
+non terminal expr_part;
+non terminal expr;
+
+/*
  * Grammar rules
  */
+precedence left PLUS, MINUS;
+precedence left TIMES, OVER;
 
-identifier	::= VARIABLE:i	{: System.out.println(i); :}
-		;
+stmt        ::= assignment | print;
+
+assignment  ::= VARIABLE:var IS expr:e1 PERIOD
+                {: System.out.println(var + " is " + e1); :}
+                ;
+
+expr_list   ::= expr_list expr_part | expr_part;
+
+expr_part   ::= expr:e
+                |
+                error
+                ;
+
+expr        ::= expr:e1 PLUS expr:e2
+                {: RESULT = new Integer(e1.intValue() + e2.intValue()); :}
+                |
+                expr:e1 MINUS expr:e2
+                {: RESULT = new Integer(e1.intValue() - e2.intValue()); :}
+                |
+                expr:e1 TIMES expr:e2
+                {: RESULT = new Integer(e1.intValue() * e2.intValue()); :}
+                |
+                expr:e1 OVER expr:e2
+                {: RESULT = new Integer(e1.intValue() / e2.intValue()); :}
+                |
+                VARIABLE:var
+                {: System.out.println(var); :}
+                |
+                INTEGER:i
+                {: System.out.println(i); :}
+                ;
+
+print       ::= PRINT VARIABLE:var PERIOD
+                {: System.out.println(var); :}
+                |
+                PRINT INTEGER:i PERIOD
+                {: System.out.println(i); :}
+                ;
