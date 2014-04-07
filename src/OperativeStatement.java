@@ -37,9 +37,10 @@ public class OperativeStatement implements Node{
         return children;
     }
     
-    public String traslate(){
+    public String[] traslate(){
         //TODO
-        return;
+        String[] arr = {""};
+        return arr;
     }
 
     public String getSemanticRepresentation(){

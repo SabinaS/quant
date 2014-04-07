@@ -49,9 +49,10 @@ public class AssignmentStatement implements Node{
         return children;
     }
 
-    public String translate(){
+    public String[] translate(){
         // TODO
-        return "";
+        String[] arr = {""};
+        return arr;
     }
 
     public String getSemanticRepresentation(){

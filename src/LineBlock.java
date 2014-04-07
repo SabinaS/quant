@@ -44,7 +44,8 @@ public class LineBlock implements Node{
 
     public String translate(){
         // TODO
-        return "";
+        String[] arr = {""};
+        return arr;
     }
 
     public String getSemanticRepresentation(){

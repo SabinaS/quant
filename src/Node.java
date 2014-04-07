@@ -20,6 +20,9 @@ public interface Node
     /** Flag for inheritance declaration in an AssignmentStatement. */
     public static final int INHT_MODE = 2;
 
+    /** Semantic flag for a print keyword. */
+    public static final int SEM_PRINT_KWD = 1;
+
     /** 
      * Connects a node to a child node
      * (structurally either a single 
@@ -33,14 +36,17 @@ public interface Node
      * Returns the child Nodes of the
      * given node as an array of nodes.
      */
-    public Node[] getChildren();    
+    public Node[] getChildren();    2
 
     /**
      * Returns a string translation of
      * either a node or the subtree for which
      * it is the root.
+     *
+     * Structure of returned array:
+     * { TRANSLATION DIRECTIVE, STRING TRANSLATION };
      */
-    public String translate();
+    public String[] translate();
 
     /**
      * Returns a string containing a 

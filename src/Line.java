@@ -40,6 +40,7 @@ public class Line implements Node{
             children = new Node[1];
             children[0] = qualifier;
         }  else{
+            children = new Node[2];
             children[0] = qualifier;
             children[1] = terminator;
         }
@@ -48,7 +49,8 @@ public class Line implements Node{
 
     public String translate(){
         // TODO
-        return "";
+        String[] arr = { "" };
+        return arr;
     }
 
     public String getSemanticRepresentation(){
