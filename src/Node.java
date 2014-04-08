@@ -23,6 +23,11 @@ public interface Node
     /** Semantic flag for a print keyword. */
     public static final int SEM_PRINT_KWD = 1;
 
+    /** Semantic flag for an integer constant. */
+    public static final int SEM_INT_CONST = 1;
+    /** Semantic flag for a rational number constant. */
+    public static final int SEM_RAT_CONST = 2;
+
     /** 
      * Connects a node to a child node
      * (structurally either a single 
