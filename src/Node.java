@@ -41,7 +41,7 @@ public interface Node
      * Returns the child Nodes of the
      * given node as an array of nodes.
      */
-    public Node[] getChildren();    2
+    public Node[] getChildren();    
 
     /**
      * Returns a string translation of
