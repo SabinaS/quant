@@ -16,73 +16,52 @@ parser code {:
  * Symbol definitions
  */
 
-terminal VARIABLE;
-terminal IS;
-terminal PERIOD;
-terminal PLUS;
-terminal MINUS;
-terminal TIMES;
-terminal OVER;
 terminal PRINT;
-terminal INVALID;
 
-/*
- * terminals with associated type values
- */
-terminal String IDENTIFIER;
-terminal Integer INTEGER;
+terminal String STRING_LITERAL;
+
+terminal PERIOD;
+
+terminal INVALID;
 
 /*
  * non-terminals
  */
-non terminal stmt;
-non terminal assignment;
-non terminal print;
-non terminal expr_list;
-non terminal expr_part;
-non terminal expr;
+non terminal Node line_block;
+non terminal Node line;
+non terminal Node statement;
+non terminal Node optv_statement;
+non terminal Node line_terminator;
+non terminal Node operative_kwd;
+non terminal Node value;
 
-/*
- * Grammar rules
- */
-precedence left PLUS, MINUS;
-precedence left TIMES, OVER;
+line_block	::= line_block:lb line:ln
+		    {: lb.addChild(ln); RESULT = lb; :}
+		    |
+		    line:ln
+		    {: RESULT = new LineBlock(ln); :}
+		    ;
 
-stmt        ::= assignment | print;
+line		::= statement:stmt line_terminator:lt
+		    {: RESULT = new Line(stmt, lt); :}
+		    ;
 
-assignment  ::= VARIABLE:var IS expr:e1 PERIOD
-                {: System.out.println(var + " is " + e1); :}
-                ;
+statement	::= optv_statement:ostmt
+		    {: RESULT = new Statement(ostmt); :}
+		    ;
 
-expr_list   ::= expr_list expr_part | expr_part;
+optv_statement	::= operative_kwd:kwd value:v
+		    {: RESULT = new OperativeStatement(kwd, v); :}
+		    ;
 
-expr_part   ::= expr:e
-                |
-                error
-                ;
+operative_kwd	::= PRINT
+		    {: RESULT = new OperativeKeyword(Node.SEM_PRINT_KWD); :}
+		    ;
 
-expr        ::= expr:e1 PLUS expr:e2
-                {: RESULT = new Integer(e1.intValue() + e2.intValue()); :}
-                |
-                expr:e1 MINUS expr:e2
-                {: RESULT = new Integer(e1.intValue() - e2.intValue()); :}
-                |
-                expr:e1 TIMES expr:e2
-                {: RESULT = new Integer(e1.intValue() * e2.intValue()); :}
-                |
-                expr:e1 OVER expr:e2
-                {: RESULT = new Integer(e1.intValue() / e2.intValue()); :}
-                |
-                VARIABLE:var
-                {: System.out.println(var); :}
-                |
-                INTEGER:i
-                {: System.out.println(i); :}
-                ;
+value		::= STRING_LITERAL:s
+		    {: RESULT = new StringConstant(s); :}
+		    ;
 
-print       ::= PRINT VARIABLE:var PERIOD
-                {: System.out.println(var); :}
-                |
-                PRINT INTEGER:i PERIOD
-                {: System.out.println(i); :}
-                ;
+line_terminator ::= PERIOD
+		    {: RESULT = new Terminator(Node.IMP_TERM); :}
+		    ;

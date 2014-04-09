@@ -15,11 +15,11 @@ import java_cup.runtime.*;
  */
 
 %cup
-%char               /* turn on character counting now, for debugging */
+%cupdebug            /* turn on character counting now, for debugging */
 %line
+%debug
 %column
-%unicode
-%debug              /* turn on debugging for now */
+%unicode              /* turn on debugging for now */
 %class QuantLexer
 %{
 
@@ -43,32 +43,22 @@ import java_cup.runtime.*;
 /**
  * Pattern definitions (--Aubrey)
  */
-letter        = [A-Za-z]
-digit         = [0-9]
-alphanumeric  = {letter}|{digit}
-identifier    = {letter}+
-integer       = {digit}+
-period        = \.
-plus          = plus | \+
-minus         = minus | \-
-times         = times | \*
-divide        = over | \/
-print         = print | Print
-whitespace    = [ \n\t]
+
+string		= \"[^\"]*\"
+
+period		= \.
+
+print		= (print|Print)
+
+whitespace	= [ \n\t]
 
 %%
 /**
  * Lexical rules (--Aubrey)
  */
 
-is              { return getSymbol(sym.IS); }
-{print}         { return getSymbol(sym.PRINT); }
-{period}        { return getSymbol(sym.PERIOD); }
-{plus}          { return getSymbol(sym.PLUS); }
-{minus}         { return getSymbol(sym.MINUS); }
-{times}         { return getSymbol(sym.TIMES); }
-{divide}        { return getSymbol(sym.OVER); }
-{integer}       { return getSymbol(sym.INTEGER, new Integer(Integer.parseInt(yytext()))); }
-{identifier}    { return getSymbol(sym.VARIABLE, yytext()); }
+{string}	{ return getSymbol(sym.STRING_LITERAL, yytext()); }
+{print}		{ return getSymbol(sym.PRINT); }
+{period}	{ return getSymbol(sym.PERIOD); }
 {whitespace}    { /* Ignore. */ }
 .               { return getSymbol(sym.INVALID); }
