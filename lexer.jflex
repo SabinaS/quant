@@ -15,9 +15,7 @@ import java_cup.runtime.*;
  */
 
 %cup
-%cupdebug            /* turn on character counting now, for debugging */
 %line
-%debug
 %column
 %unicode              /* turn on debugging for now */
 %class QuantLexer
@@ -31,10 +29,10 @@ import java_cup.runtime.*;
  /**
   * Return a vanilla symbol (token ID only).
   */
- Symbol getSymbol(int tokenID){
+ public Symbol getSymbol(int tokenID){
      return new Symbol(tokenID, yyline, yycolumn);
  }
- Symbol getSymbol(int tokenID, Object value){
+ public Symbol getSymbol(int tokenID, Object value){
      return new Symbol(tokenID, yyline, yycolumn, value);
  }
 
