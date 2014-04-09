@@ -48,9 +48,20 @@ public class Line implements Node{
     }
 
     public String[] translate(){
-        // TODO
-        String[] arr = { "" };
-        return arr;
+        // Aubrey
+        // The translation of a line depends on the
+        // semantic type of the terminator.
+        String[] translation = {""};
+
+        if( ((Terminator) terminator).getType() == Node.IMP_TERM ){
+            // Always translate an imperative line in place.
+            // The qualifier's directive can be ignored.
+            translation = new String[2];
+            translation[0] = Translator.IN_PLACE;
+            translation[1] = qualifier.translate()[1] + ";";
+         }
+
+        return translation;
     }
 
     public String getSemanticRepresentation(){

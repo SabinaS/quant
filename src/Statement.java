@@ -40,9 +40,8 @@ public class Statement implements Node{
     }
     
     public String[] translate(){
-        // TODO
-        String[] arr = {""};
-        return arr;
+        // Simply return the translation of the wrapped statement.
+        return containedStatement.translate();
     }
 
     public String getSemanticRepresentation(){

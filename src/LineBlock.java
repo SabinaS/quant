@@ -42,10 +42,29 @@ public class LineBlock implements Node{
         return nodeArray;
     }
 
+    /** 
+     * Translates a line block (the entire program).
+     * Only exception to the directive-literal format.
+     * returns ordered Java blocks.  (See Translator.java
+     * for ordering.)
+     *
+     * @author Aubrey
+     */
     public String[] translate(){
         // TODO
-        String[] arr = {""};
-        return arr;
+        Node[] children = getChildren();
+        String mainBlock = "";
+        
+        for(int i = 0; i < children.length; i++){
+            Node child = children[i];
+            String[] cTranslation = child.translate();
+            // line-level translations will be of length 2
+            if(cTranslation[0].equals(Translator.IN_PLACE))
+                mainBlock = mainBlock + "\n" + cTranslation[1];
+        }
+
+        String[] translation = { mainBlock };
+        return translation;
     }
 
     public String getSemanticRepresentation(){
