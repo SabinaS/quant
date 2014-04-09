@@ -16,13 +16,13 @@ parser code {:
  * Symbol definitions
  */
 
-terminal Symbol PRINT;
+terminal PRINT;
 
-terminal Symbol STRING_LITERAL;
+terminal String STRING_LITERAL;
 
-terminal Symbol PERIOD;
+terminal PERIOD;
 
-terminal Symbol INVALID;
+terminal INVALID;
 
 /*
  * non-terminals
@@ -59,7 +59,7 @@ operative_kwd	::= PRINT
 		    ;
 
 value		::= STRING_LITERAL:s
-		    {: RESULT = new StringConstant(s.value.toString()); :}
+		    {: RESULT = new StringConstant(s); :}
 		    ;
 
 line_terminator ::= PERIOD
