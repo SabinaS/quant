@@ -15,7 +15,7 @@ public class Unit implements Node{
      *
      * @param v string to be held
      */
-    public StringConstant(String v){
+    public Unit(String v){
         unit = v;
     }
 

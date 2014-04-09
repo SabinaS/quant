@@ -21,7 +21,7 @@ public class Number implements Node{
      * integer constant.
      */
     public Number(int i){
-        rVal = null;
+        rVal = 0;
         iVal = i;
         const_type = Node.SEM_INT_CONST;
     }
@@ -32,7 +32,7 @@ public class Number implements Node{
      */
     public Number(double r){
         rVal = r;
-        iVal = null;
+        iVal = 0;
         const_type = Node.SEM_RAT_CONST;
     }
 

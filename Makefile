@@ -7,6 +7,7 @@ cup = ./lib/java-cup-11b.jar
 jflex = ./lib/jflex-1.5.0.jar
 cuprt = ./lib/java-cup-11b-runtime.jar
 home = ./
+src = ./src/*
 
 .PHONY: lexer
 lexparse:
@@ -14,7 +15,8 @@ lexparse:
 	java -jar $(jflex) lexer.jflex
 
 compiler:
-	javac -cp $(cuprt):$(cup):$(home) Compiler.java sym.java parser.java QuantLexer.java
+	javac -d ./ ./src/*.java
+	javac -cp $(cuprt):$(src):$(cup):$(home) Compiler.java sym.java parser.java QuantLexer.java
 
 all: lexparse compiler
 
@@ -23,4 +25,5 @@ clean:
 	rm -f sym.java
 	rm -f QuantLexer.java
 	rm -rf *.class
+	rm -rf ./src/*.class
 	rm -rf *.java~

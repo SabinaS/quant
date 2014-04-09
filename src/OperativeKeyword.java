@@ -18,7 +18,7 @@ public class OperativeKeyword implements Node{
      * @param k keyword represented
      */
     public OperativeKeyword(int k){
-        keyword = k;
+        kwd = k;
     }
 
     // Children known at construction.

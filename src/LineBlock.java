@@ -42,7 +42,7 @@ public class LineBlock implements Node{
         return nodeArray;
     }
 
-    public String translate(){
+    public String[] translate(){
         // TODO
         String[] arr = {""};
         return arr;

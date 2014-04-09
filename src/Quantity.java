@@ -33,12 +33,13 @@ public class Quantity implements Node{
             return children;
         } else{
             Node[] children = { number };
+            return children;
         }
     }
 
     public String[] translate(){
         // TODO
-        String arr = { "" };
+        String[] arr = { "" };
         return arr;
     }
 

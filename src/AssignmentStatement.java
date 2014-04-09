@@ -23,6 +23,7 @@ public class AssignmentStatement implements Node{
      * Mode of assignment--either NODE.ASSMNT_MODE
      * for simple assignment or NODE.INHT_MODE
      * for initialization of non-primitive to a type.
+     */
     private int mode;
 
     /**

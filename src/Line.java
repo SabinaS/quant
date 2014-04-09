@@ -10,7 +10,7 @@ public class Line implements Node{
     /** The functional content of the line. */
     private Node qualifier;
 
-    /** The line terminator (if non-block-level qualifier.) */
+    /** The line terminator */
     private Node terminator;
 
     /**
@@ -47,7 +47,7 @@ public class Line implements Node{
         return children;
     }
 
-    public String translate(){
+    public String[] translate(){
         // TODO
         String[] arr = { "" };
         return arr;

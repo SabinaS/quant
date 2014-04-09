@@ -33,11 +33,11 @@ public class OperativeStatement implements Node{
 
     // operator, then value
     public Node[] getChildren(){
-        Node[] children = { operator, value };
+        Node[] children = { keyword, value };
         return children;
     }
     
-    public String[] traslate(){
+    public String[] translate(){
         //TODO
         String[] arr = {""};
         return arr;
@@ -45,6 +45,6 @@ public class OperativeStatement implements Node{
 
     public String getSemanticRepresentation(){
         // TODO
-        return;
+        return "";
     }
 }

@@ -28,6 +28,9 @@ public interface Node
     /** Semantic flag for a rational number constant. */
     public static final int SEM_RAT_CONST = 2;
 
+    /** Semantic flag for an imperative terminator (period). */
+    public static final int IMP_TERM = 1;
+
     /** 
      * Connects a node to a child node
      * (structurally either a single 
