@@ -15,6 +15,7 @@ import java_cup.runtime.*;
  */
 
 %cup
+%cupdebug
 %line
 %column
 %unicode              /* turn on debugging for now */
@@ -43,8 +44,8 @@ import java_cup.runtime.*;
  */
 
 string		= \"[^\"]*\"
-integer		= [\+\-][0-9]+
-rat_num		= [\+\-][0-9]+\.[0-9]+
+integer		= [\-]?[0-9]+
+rat_num		= [\-]?[0-9]+\.[0-9]+
 
 period		= \.
 

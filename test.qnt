@@ -1,3 +1,2 @@
-A is 5.
-B is A plus 3.
-Print A.
+Print 5 inches.
+Print "I can print strings and numbers!".

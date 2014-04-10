@@ -44,7 +44,7 @@ public class OperativeKeyword implements Node{
                 arr[0] = Translator.IN_PLACE;
                 arr[1] = "System.out.println(";
                 arr[2] = Translator.AFTER_SIBLING;
-                arr[3] = ")";
+                arr[3] = ".toString())";
                 break;
             default:
                 arr = new String[1];

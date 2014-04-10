@@ -39,8 +39,10 @@ public class Translator{
      */
     public String getJava(String programName){
         String[] components = AST.translate();
+        StaticCode sc = new StaticCode();
         String java = "public class "+programName+"{\n"+
                       "public static void main(String[] args){\n"+
+                      sc.getFactoryStructure(programName)+"\n"+
                       components[MAIN_BLOCK_INDEX] + "\n"+
                       "}\n"+
                       StaticCode.VALUE_STRUCTURE+"\n"+
@@ -53,7 +55,10 @@ public class Translator{
       * program not affected by AST structure.
       * @author Aubrey
       */
-    class StaticCode{
+    private class StaticCode{
+        public String getFactoryStructure(String n){
+            return n+" factory = new "+n+"();\n";
+        }
         public static final String VALUE_STRUCTURE = 
             "class NUMVAL{\n"+
             "    public int vi = 0;\n"+
@@ -62,11 +67,16 @@ public class Translator{
             "    public UNIT vu;\n"+
             "    public NUMVAL(int v, UNIT u){ vi = v; m = 0; vu = u;}\n"+
             "    public NUMVAL(double v, UNIT u){ vr = v; m = 1; vu = u;}\n"+
+            "    public String toString(){"+
+            "        return (m == 0 ? \"\"+vi : \"\"+vr)" +
+            "        +vu.toString(); }"+
             "}";
         public static final String UNIT_STRUCTURE =
             "class UNIT{\n"+
             "    public String v = \"\";\n"+
             "    public UNIT(String u){ v = u; }\n"+
+            "    public String toString(){"+
+            "        return v.length()>0 ? \" \"+v : \"\"; }"+
             "}";
     }
 }
