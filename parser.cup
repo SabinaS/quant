@@ -18,7 +18,10 @@ parser code {:
 
 terminal PRINT;
 
+terminal String IDENTIFIER;
 terminal String STRING_LITERAL;
+terminal Integer INTEGER_LITERAL;
+terminal Double RATIONAL_LITERAL;
 
 terminal PERIOD;
 
@@ -34,6 +37,9 @@ non terminal Node optv_statement;
 non terminal Node line_terminator;
 non terminal Node operative_kwd;
 non terminal Node value;
+non terminal Node quantity;
+non terminal Node number;
+non terminal Node unit;
 
 line_block	::= line_block:lb line:ln
 		    {: lb.addChild(ln); RESULT = lb; :}
@@ -60,6 +66,29 @@ operative_kwd	::= PRINT
 
 value		::= STRING_LITERAL:s
 		    {: RESULT = new StringConstant(s); :}
+		    |
+		    quantity:q
+		    {: RESULT = new Value(q); :}
+		    ;
+
+quantity	::= number:num unit:u
+		    {: RESULT = new Quantity(num, u); :}
+                    |
+		    number:num
+		    {: RESULT = new Quantity(num, null); :}
+		    ;
+
+number		::= INTEGER_LITERAL:num
+		    {: RESULT = new Number(num); :}
+		    |
+		    RATIONAL_LITERAL:num
+		    {: RESULT = new Number(num); :}
+		    ;
+
+unit		::= IDENTIFIER:ident
+		    {: // More symbol table management here -- record ident type
+		       RESULT = new Unit(ident);
+                    :}
 		    ;
 
 line_terminator ::= PERIOD

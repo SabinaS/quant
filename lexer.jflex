@@ -43,6 +43,8 @@ import java_cup.runtime.*;
  */
 
 string		= \"[^\"]*\"
+integer		= [\+\-][0-9]+
+rat_num		= [\+\-][0-9]+\.[0-9]+
 
 period		= \.
 
@@ -50,13 +52,20 @@ print		= (print|Print)
 
 whitespace	= [ \n\t]
 
+identifier	= [A-Za-z]+
+
 %%
 /**
  * Lexical rules (--Aubrey)
  */
 
+{integer}	{ return getSymbol(sym.INTEGER_LITERAL, new Integer(yytext())); }
+{rat_num}	{ return getSymbol(sym.RATIONAL_LITERAL, new Double(yytext())); }
 {string}	{ return getSymbol(sym.STRING_LITERAL, yytext()); }
 {print}		{ return getSymbol(sym.PRINT); }
 {period}	{ return getSymbol(sym.PERIOD); }
 {whitespace}    { /* Ignore. */ }
+{identifier}	{ // Will need to add symbol table management.
+		  return getSymbol(sym.IDENTIFIER, yytext());
+		}
 .               { return getSymbol(sym.INVALID); }
