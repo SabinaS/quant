@@ -42,7 +42,31 @@ public class Translator{
         String java = "public class "+programName+"{\n"+
                       "public static void main(String[] args){\n"+
                       components[MAIN_BLOCK_INDEX] + "\n"+
-                      "}\n}";
+                      "}\n"+
+                      StaticCode.VALUE_STRUCTURE+"\n"+
+                      StaticCode.UNIT_STRUCTURE+"\n"+
+                      "}";
         return java;
+    }
+
+    /** Static constant container for portions of the translated
+      * program not affected by AST structure.
+      * @author Aubrey
+      */
+    class StaticCode{
+        public static final String VALUE_STRUCTURE = 
+            "class NUMVAL{\n"+
+            "    public int vi = 0;\n"+
+            "    public double vr = 0;\n"+
+            "    public int m = 0;\n"+
+            "    public UNIT vu;\n"+
+            "    public NUMVAL(int v, UNIT u){ vi = v; m = 0; vu = u;}\n"+
+            "    public NUMVAL(double v, UNIT u){ vr = v; m = 1; vu = u;}\n"+
+            "}";
+        public static final String UNIT_STRUCTURE =
+            "class UNIT{\n"+
+            "    public String v = \"\";\n"+
+            "    public UNIT(String u){ v = u; }\n"+
+            "}";
     }
 }
