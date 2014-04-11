@@ -27,6 +27,10 @@ parser code {:
  */
 
 terminal PRINT;
+terminal IS_A;
+terminal IS;
+terminal SET;
+terminal TO; 
 
 terminal String IDENTIFIER;
 terminal String STRING_LITERAL;
@@ -128,6 +132,17 @@ unit		::= IDENTIFIER:ident
 	 	               prevClass);
 		       RESULT = new Unit(ident);
                     :}
+		    ;
+
+field		::= IDENTIFIER:ident
+		    {:
+		       int prevClass = 
+		        symrecord.setClass(ident, SymbolRecord.VARIABLE_CLASS);
+		       if(prevClass != 0)
+		           identClassError(ident, SymbolRecord.VARIABLE_CLASS,
+		               prevClass);
+		       RESULT = new Variable(ident, symrecord);
+		    :}
 		    ;
 
 line_terminator ::= PERIOD

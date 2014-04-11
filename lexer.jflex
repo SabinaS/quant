@@ -55,7 +55,11 @@ period		= \.
 lparen		= \(
 rparen		= \)
 
-print		= (print|Print)
+is_a		= ( is a )
+is		= ( is )
+print		= (print |Print )
+set		= (Set |set )
+to		= ( to )
 
 whitespace	= [ \n\t]
 
@@ -73,6 +77,10 @@ identifier	= [A-Za-z]+
 {divide}	{ return getSymbol(sym.DIVIDE); }
 {string}	{ return getSymbol(sym.STRING_LITERAL, yytext()); }
 {print}		{ return getSymbol(sym.PRINT); }
+{is}		{ return getSymbol(sym.IS); }
+{is_a}		{ return getSymbol(sym.IS_A); }
+{set}		{ return getSymbol(sym.SET); }
+{to}		{ return getSymbol(sym.TO); }
 {lparen}	{ return getSymbol(sym.LPAREN); }
 {rparen}	{ return getSymbol(sym.RPAREN); }
 {period}	{ return getSymbol(sym.PERIOD); }
