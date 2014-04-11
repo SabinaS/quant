@@ -9,11 +9,21 @@
 
 import java_cup.runtime.*;
 
+action code {:
+    public SymbolRecord symrecord = new SymbolRecord();
+    public void identClassError(String identifier, int expected, int found){
+        System.out.println("Error: '"+identifier+"' is used as a "+
+            SymbolRecord.CLASSES[expected]+" but is a "+
+            SymbolRecord.CLASSES[found]+".");
+        System.exit(0);
+    }
+:}
+
 parser code {:
 :}
 
 /*
- * Symbol definitions
+ * Symbol definitions`
  */
 
 terminal PRINT;
@@ -110,7 +120,12 @@ number		::= INTEGER_LITERAL:num
 		    ;
 
 unit		::= IDENTIFIER:ident
-		    {: // More symbol table management here -- record ident type
+		    {: 
+                       int prevClass = 
+			   symrecord.setClass(ident, SymbolRecord.UNIT_CLASS);
+                       if(prevClass != 0)
+		           identClassError(ident, SymbolRecord.UNIT_CLASS, 
+	 	               prevClass);
 		       RESULT = new Unit(ident);
                     :}
 		    ;
