@@ -15,7 +15,6 @@ import java_cup.runtime.*;
  */
 
 %cup
-%cupdebug
 %line
 %column
 %unicode              /* turn on debugging for now */
@@ -44,10 +43,17 @@ import java_cup.runtime.*;
  */
 
 string		= \"[^\"]*\"
-integer		= [\-]?[0-9]+
-rat_num		= [\-]?[0-9]+\.[0-9]+
+integer		= ( [\-])?[0-9]+
+rat_num		= ( [\-])?[0-9]+\.[0-9]+
+
+plus		= (\+|Plus|plus)
+minus		= (\-|Minus|minus)
+times		= (\*|Times|times)
+divide		= (\\|divided by|over)
 
 period		= \.
+lparen		= \(
+rparen		= \)
 
 print		= (print|Print)
 
@@ -59,11 +65,16 @@ identifier	= [A-Za-z]+
 /**
  * Lexical rules (--Aubrey)
  */
-
 {integer}	{ return getSymbol(sym.INTEGER_LITERAL, new Integer(yytext())); }
 {rat_num}	{ return getSymbol(sym.RATIONAL_LITERAL, new Double(yytext())); }
+{plus}		{ return getSymbol(sym.PLUS); }
+{minus}		{ return getSymbol(sym.MINUS); }
+{times}		{ return getSymbol(sym.TIMES); }
+{divide}	{ return getSymbol(sym.DIVIDE); }
 {string}	{ return getSymbol(sym.STRING_LITERAL, yytext()); }
 {print}		{ return getSymbol(sym.PRINT); }
+{lparen}	{ return getSymbol(sym.LPAREN); }
+{rparen}	{ return getSymbol(sym.RPAREN); }
 {period}	{ return getSymbol(sym.PERIOD); }
 {whitespace}    { /* Ignore. */ }
 {identifier}	{ // Will need to add symbol table management.

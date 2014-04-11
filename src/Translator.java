@@ -69,7 +69,35 @@ public class Translator{
             "    public NUMVAL(double v, UNIT u){ vr = v; m = 1; vu = u;}\n"+
             "    public String toString(){"+
             "        return (m == 0 ? \"\"+vi : \"\"+vr)" +
-            "        +vu.toString(); }"+
+            "        +vu.toString(); }\n"+
+            "    public NUMVAL VALPLUS(NUMVAL n){\n"+
+            "        double tv = vi + vr;\n"+
+            "        double nv = n.vi + n.vr;\n"+
+            "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
+	    "        if(nm == 0) return new NUMVAL((int)(tv+nv),vu);\n"+
+            "        else return new NUMVAL(tv+nv,vu);\n"+
+            "    }\n"+
+            "    public NUMVAL VALMINUS(NUMVAL n){\n"+
+            "        double tv = vi + vr;\n"+
+            "        double nv = n.vi + n.vr;\n"+
+            "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
+	    "        if(nm == 0) return new NUMVAL((int)(tv-nv),vu);\n"+
+            "        else return new NUMVAL(tv-nv,vu);\n"+
+            "    }\n"+
+            "    public NUMVAL VALTIMES(NUMVAL n){\n"+
+            "        double tv = vi + vr;\n"+
+            "        double nv = n.vi + n.vr;\n"+
+            "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
+	    "        if(nm == 0) return new NUMVAL((int)(tv*nv),vu);\n"+
+            "        else return new NUMVAL(tv*nv,vu);\n"+
+            "    }\n"+
+            "    public NUMVAL VALDIVIDE(NUMVAL n){\n"+
+            "        double tv = vi + vr;\n"+
+            "        double nv = n.vi + n.vr;\n"+
+            "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
+	    "        if(nm == 0) return new NUMVAL((int)(tv/nv),vu);\n"+
+            "        else return new NUMVAL(tv/nv,vu);\n"+
+            "    }\n"+
             "}";
         public static final String UNIT_STRUCTURE =
             "class UNIT{\n"+

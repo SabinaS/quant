@@ -31,6 +31,15 @@ public interface Node
     /** Semantic flag for an imperative terminator (period). */
     public static final int IMP_TERM = 1;
 
+    /** Semantic flag for an addition operation. */
+    public static final int SEM_PLUS = 1;
+    /** Semantic flag for a subtraction operation. */
+    public static final int SEM_MINUS = 2;
+    /** Semantic flag for a multiplication operation. */
+    public static final int SEM_TIMES = 3;
+    /** Semantic flag for a subtraction operation. */
+    public static final int SEM_DIVIDE = 4;
+
     /** 
      * Connects a node to a child node
      * (structurally either a single 

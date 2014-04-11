@@ -23,8 +23,9 @@ terminal String STRING_LITERAL;
 terminal Integer INTEGER_LITERAL;
 terminal Double RATIONAL_LITERAL;
 
+terminal LPAREN, RPAREN;
+terminal PLUS, MINUS, TIMES, DIVIDE;
 terminal PERIOD;
-
 terminal INVALID;
 
 /*
@@ -40,6 +41,10 @@ non terminal Node value;
 non terminal Node quantity;
 non terminal Node number;
 non terminal Node unit;
+non terminal Node expression;
+
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE;
 
 line_block	::= line_block:lb line:ln
 		    {: lb.addChild(ln); RESULT = lb; :}
@@ -50,7 +55,7 @@ line_block	::= line_block:lb line:ln
 
 line		::= statement:stmt line_terminator:lt
 		    {: RESULT = new Line(stmt, lt); :}
-		    ;
+                    ;		    
 
 statement	::= optv_statement:ostmt
 		    {: RESULT = new Statement(ostmt); :}
@@ -58,17 +63,52 @@ statement	::= optv_statement:ostmt
 
 optv_statement	::= operative_kwd:kwd value:v
 		    {: RESULT = new OperativeStatement(kwd, v); :}
+                    |
+		    operative_kwd:kwd expression:e
+		    {: RESULT = new OperativeStatement(kwd, e); :}
 		    ;
+
 
 operative_kwd	::= PRINT
 		    {: RESULT = new OperativeKeyword(Node.SEM_PRINT_KWD); :}
 		    ;
+
+expression	::= value:l PLUS value:r
+		    {: RESULT = new Expression(l,r, Node.SEM_PLUS); :}
+		    |
+		    expression:l PLUS value:r
+		    {: RESULT = new Expression(l,r, Node.SEM_PLUS); :}
+		    |
+		    value:l MINUS value:r
+		    {: RESULT = new Expression(l,r, Node.SEM_MINUS); :}
+		    |
+		    expression:l MINUS value:r
+		    {: RESULT = new Expression(l,r, Node.SEM_MINUS); :}
+		    |
+		    value:l TIMES value:r
+		    {: RESULT = new Expression(l,r, Node.SEM_TIMES); :}
+		    |
+		    expression:l TIMES value:r
+		    {: RESULT = new Expression(l,r, Node.SEM_TIMES); :}
+                    |
+		    value:l DIVIDE value:r
+		    {: RESULT = new Expression(l,r, Node.SEM_DIVIDE); :}
+		    |
+		    expression:l DIVIDE value:r
+		    {: RESULT = new Expression(l,r, Node.SEM_DIVIDE); :}
+		    |
+		    LPAREN expression:e RPAREN
+		    {: RESULT = e; :}
+                    ;
 
 value		::= STRING_LITERAL:s
 		    {: RESULT = new StringConstant(s); :}
 		    |
 		    quantity:q
 		    {: RESULT = new Value(q); :}
+		    |
+		    LPAREN value:v RPAREN
+		    {: RESULT = v; :}
 		    ;
 
 quantity	::= number:num unit:u

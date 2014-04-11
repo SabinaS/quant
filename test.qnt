@@ -1,2 +1,2 @@
-Print 5 inches.
-Print "I can print strings and numbers!".
+Print "Check out this arithmetic.".
+Print 5 + (2 * 3).
