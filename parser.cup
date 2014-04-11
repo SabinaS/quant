@@ -61,44 +61,31 @@ statement	::= optv_statement:ostmt
 		    {: RESULT = new Statement(ostmt); :}
 		    ;
 
-optv_statement	::= operative_kwd:kwd value:v
-		    {: RESULT = new OperativeStatement(kwd, v); :}
-                    |
-		    operative_kwd:kwd expression:e
+optv_statement	::= operative_kwd:kwd expression:e
 		    {: RESULT = new OperativeStatement(kwd, e); :}
 		    ;
-
 
 operative_kwd	::= PRINT
 		    {: RESULT = new OperativeKeyword(Node.SEM_PRINT_KWD); :}
 		    ;
 
-expression	::= value:l PLUS value:r
+expression	::= expression:l PLUS expression:r
 		    {: RESULT = new Expression(l,r, Node.SEM_PLUS); :}
 		    |
-		    expression:l PLUS value:r
-		    {: RESULT = new Expression(l,r, Node.SEM_PLUS); :}
-		    |
-		    value:l MINUS value:r
+		    expression:l MINUS expression:r
 		    {: RESULT = new Expression(l,r, Node.SEM_MINUS); :}
-		    |
-		    expression:l MINUS value:r
-		    {: RESULT = new Expression(l,r, Node.SEM_MINUS); :}
-		    |
-		    value:l TIMES value:r
+    		    |
+		    expression:l TIMES expression:r
 		    {: RESULT = new Expression(l,r, Node.SEM_TIMES); :}
 		    |
-		    expression:l TIMES value:r
-		    {: RESULT = new Expression(l,r, Node.SEM_TIMES); :}
-                    |
-		    value:l DIVIDE value:r
+		    expression:l DIVIDE expression:r
 		    {: RESULT = new Expression(l,r, Node.SEM_DIVIDE); :}
 		    |
-		    expression:l DIVIDE value:r
-		    {: RESULT = new Expression(l,r, Node.SEM_DIVIDE); :}
+		    value:v
+		    {: RESULT = v; :}
 		    |
-		    LPAREN expression:e RPAREN
-		    {: RESULT = e; :}
+		    LPAREN expression:v RPAREN
+		    {: RESULT = v; :}
                     ;
 
 value		::= STRING_LITERAL:s
@@ -106,9 +93,6 @@ value		::= STRING_LITERAL:s
 		    |
 		    quantity:q
 		    {: RESULT = new Value(q); :}
-		    |
-		    LPAREN value:v RPAREN
-		    {: RESULT = v; :}
 		    ;
 
 quantity	::= number:num unit:u

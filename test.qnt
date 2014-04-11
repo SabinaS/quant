@@ -1,2 +1,2 @@
 Print "Check out this arithmetic.".
-Print 5 + (2 * 3).
+Print 5 inches plus 8 inches.
