@@ -21,7 +21,7 @@ public class SymbolRecord{
     /** Encoding for a string variable. */
     public static String STRING_TYPE = "String";
     /** Encoding for a quantity variable. */
-    public static String QUANTITY_TYPE = "NUMVALL";
+    public static String QUANTITY_TYPE = "NUMVAL";
 
     private HashMap<String, Integer> classRecord;
     private HashMap<String, String> typeRecord;

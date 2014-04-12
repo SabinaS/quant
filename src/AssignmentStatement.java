@@ -52,7 +52,12 @@ public class AssignmentStatement implements Node{
 
     public String[] translate(){
         // TODO
-        String[] arr = {""};
+        String[] arr = {"",""};
+        arr[0] = Translator.IN_PLACE;
+        if(mode == Node.ASSMNT_MODE){
+            arr[1] = toSet.translate()[1]+" = "+
+                value.translate()[1];
+        }
         return arr;
     }
 

@@ -21,7 +21,6 @@ public class Variable implements Node{
         name = n;
         symrecord = r;
         // Variable is a quantity by default.
-        symrecord.setType(n, SymbolRecord.QUANTITY_TYPE);
         // Variable is not declared until its initial translation.
         symrecord.setDeclared(n, 0);
     }
@@ -42,7 +41,13 @@ public class Variable implements Node{
     public void addChild(Node c){ return; }
 
     public String[] translate(){
-        String[] translation = {""};
+        String[] translation = new String[2];
+        translation[0] = Translator.IN_PLACE;
+        
+	String literal = ( symrecord.isDeclared(name) ? "" : 
+                           symrecord.getType(name) ) + " "+name;
+        symrecord.setDeclared(name,1);
+        translation[1] = literal;
         return translation;
     }
     
@@ -50,4 +55,6 @@ public class Variable implements Node{
         // TODO
         return "";
     }
+
+    public String getName(){ return name; }
 }

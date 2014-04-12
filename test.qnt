@@ -1,2 +1,4 @@
-Print "Check out this arithmetic.".
-Print 5 inches plus 8 inches.
+A is 5.
+B is 7.
+A is B + 1.
+Print A plus B.

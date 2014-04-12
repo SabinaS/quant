@@ -42,7 +42,7 @@ public class Expression implements Node{
 
     public String getSemanticRepresentation(){
         // TODO
-        return "";
+        return "NUMVAL";
     }
 
     private String getOp(){

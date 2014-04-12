@@ -36,6 +36,6 @@ public class StringConstant implements Node{
     }
 
     public String getSemanticRepresentation(){
-        return "";
+        return "STRING";
     }
 }

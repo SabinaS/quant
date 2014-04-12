@@ -17,6 +17,10 @@ action code {:
             SymbolRecord.CLASSES[found]+".");
         System.exit(0);
     }
+    public void notDefinedError(String identifier){
+        System.out.println("Error: '"+identifier+"' is not defined.");
+        System.exit(0);
+    }
 :}
 
 parser code {:
@@ -49,6 +53,7 @@ non terminal Node line_block;
 non terminal Node line;
 non terminal Node statement;
 non terminal Node optv_statement;
+non terminal Node asmt_statement;
 non terminal Node line_terminator;
 non terminal Node operative_kwd;
 non terminal Node value;
@@ -56,6 +61,7 @@ non terminal Node quantity;
 non terminal Node number;
 non terminal Node unit;
 non terminal Node expression;
+non terminal Node field;
 
 precedence left PLUS, MINUS;
 precedence left TIMES, DIVIDE;
@@ -73,6 +79,29 @@ line		::= statement:stmt line_terminator:lt
 
 statement	::= optv_statement:ostmt
 		    {: RESULT = new Statement(ostmt); :}
+		    |
+		    asmt_statement:astmt
+		    {: RESULT = new Statement(astmt); :}
+		    ;
+
+asmt_statement	::= field:f IS expression:v
+		    {: 
+		       if(v.getSemanticRepresentation().equals("STRING"))
+		           ((Variable) f).setType(SymbolRecord.STRING_TYPE);
+		       else
+		           ((Variable) f).setType(SymbolRecord.QUANTITY_TYPE);
+		       RESULT = new AssignmentStatement(f,v,
+		                        Node.ASSMNT_MODE);
+		    :}
+		    |
+		    SET field:f TO value:v
+		    {: if(v.getSemanticRepresentation().equals("STRING"))
+		           ((Variable) f).setType(SymbolRecord.STRING_TYPE);
+		       else
+		           ((Variable) f).setType(SymbolRecord.QUANTITY_TYPE);
+		       RESULT = new AssignmentStatement(f,v,
+		                        Node.ASSMNT_MODE);
+		    :}	
 		    ;
 
 optv_statement	::= operative_kwd:kwd expression:e
@@ -107,6 +136,12 @@ value		::= STRING_LITERAL:s
 		    |
 		    quantity:q
 		    {: RESULT = new Value(q); :}
+		    |
+		    field:f
+		    {: if(symrecord.getType(((Variable) f).getName())==null)
+		           notDefinedError(((Variable) f).getName());
+		       RESULT = f;
+		    :}
 		    ;
 
 quantity	::= number:num unit:u
