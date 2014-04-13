@@ -50,13 +50,23 @@ plus		= (\+|Plus|plus)
 minus		= (\-|Minus|minus)
 times		= (\*|Times|times)
 divide		= (\\|divided by|over)
+less_than	= (\<|is less than|are less than|less than)
+greater_than	= (\>|is greater than|are greater than|greater than)
+equal_to	= (\=|equals|is equal to|are equal to)
+and		= (\&\&|and)
+or		= (\|\||or)
 
+connector	= (\,|\, and|;|; and)
 period		= \.
 lparen		= \(
 rparen		= \)
 
 is_a		= ( is a )
 is		= ( is )
+if		= (if|If)
+then		= (then|Then)
+else		= (else|Else)
+while		= (while|While)
 print		= (print |Print )
 set		= (Set |set )
 to		= ( to )
@@ -75,6 +85,9 @@ identifier	= [A-Za-z]+
 {minus}		{ return getSymbol(sym.MINUS); }
 {times}		{ return getSymbol(sym.TIMES); }
 {divide}	{ return getSymbol(sym.DIVIDE); }
+{less_than}	{ return getSymbol(sym.LESS_THAN); }
+{greater_than}	{ return getSymbol(sym.GREATER_THAN); }
+{equal_to}	{ return getsymbol(sym.EQUAL_TO); }
 {string}	{ return getSymbol(sym.STRING_LITERAL, yytext()); }
 {print}		{ return getSymbol(sym.PRINT); }
 {is}		{ return getSymbol(sym.IS); }
@@ -83,6 +96,9 @@ identifier	= [A-Za-z]+
 {to}		{ return getSymbol(sym.TO); }
 {lparen}	{ return getSymbol(sym.LPAREN); }
 {rparen}	{ return getSymbol(sym.RPAREN); }
+{connector}	{ return getSymbol(sym.CONNECTOR); }
+{and}		{ return getSymbol(sym.AND); }
+{or}		{ return getSymbol(sym.OR); }
 {period}	{ return getSymbol(sym.PERIOD); }
 {whitespace}    { /* Ignore. */ }
 {identifier}	{ // Will need to add symbol table management.

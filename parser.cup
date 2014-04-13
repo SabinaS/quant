@@ -35,6 +35,9 @@ terminal IS_A;
 terminal IS;
 terminal SET;
 terminal TO; 
+terminal IF, THEN, ELSE, WHILE;
+terminal LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
+terminal AND, OR;
 
 terminal String IDENTIFIER;
 terminal String STRING_LITERAL;
@@ -44,6 +47,7 @@ terminal Double RATIONAL_LITERAL;
 terminal LPAREN, RPAREN;
 terminal PLUS, MINUS, TIMES, DIVIDE;
 terminal PERIOD;
+terminal CONNECTOR;
 terminal INVALID;
 
 /*
@@ -52,6 +56,7 @@ terminal INVALID;
 non terminal Node line_block;
 non terminal Node line;
 non terminal Node statement;
+non terminal Node stmt_sequence;
 non terminal Node optv_statement;
 non terminal Node asmt_statement;
 non terminal Node line_terminator;
@@ -62,7 +67,13 @@ non terminal Node number;
 non terminal Node unit;
 non terminal Node expression;
 non terminal Node field;
+non terminal Node cond_block;
+non terminal Node if_then_else;
+non terminal Node bool_seq;
+non terminal Node bool_exp;
 
+precedence left LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
+precedence left AND, OR;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIVIDE;
 
@@ -82,7 +93,70 @@ statement	::= optv_statement:ostmt
 		    |
 		    asmt_statement:astmt
 		    {: RESULT = new Statement(astmt); :}
+		    |
+		    cond_block:cb
+		    {: RESULT = new Statement(cb); :}
 		    ;
+
+stmt_sequence	::= statement:s
+		    {: RESULT = new StatementSequence(s); :}
+		    |
+		    stmt_sequence:seq CONNECTOR statement:stmt
+		    {: seq.addChild(stmt);
+		       RESULT = seq;
+		    :}
+		    ;
+
+cond_block	::= if_then_else:i
+		    {: RESULT = i; :}
+		    ;
+
+if_then_else	::= IF bool_seq:cond CONNECTOR THEN stmt_sequence:t_seq
+		    {: RESULT = new IfElseBlock(cond,t_seq,null); :}
+		    |
+		    IF bool_seq:cond CONNECTOR THEN stmt_sequence:t_seq
+		        PERIOD ELSE CONNECTOR stmt_sequence:f_seq
+		    {: RESULT = new IfElseBlock(cond,t_seq,f_seq); :}
+		    ;
+
+bool_seq	::= bool_exp:exp
+		    {: RESULT = new BooleanSequence(exp); :}
+		    |
+		    bool_seq:l AND bool_seq:r
+		    {: ((BooleanSequence) l).combineWith((BooleanSeqnece) r, 
+		           Node.SEM_AND);
+		       RESULT = l;
+		    :}
+		    |
+		    bool_seq:l OR bool_seq:r
+		    {: ((BooleanSequence) l).combineWith((BooleanSequence) r, 
+		           Node.SEM_OR);
+		       RESULT = l;
+		    :}
+		    |
+		    LPAREN bool_seq:s RPAREN
+		    {: RESULT = s; :}
+		    ;
+
+bool_exp	::= expression:l LESS_THAN expression:r
+		    {: RESULT = new BooleanExpression(l,r, Node.SEM_LESS_THAN);
+		    :}
+		    |
+		    expression:l GREATER_THAN expression:r
+		    {: RESULT = new BooleanExpression(l,r, 
+                           Node.SEM_GREATER_THAN);
+		    :}
+		    |
+		    expression:l EQUAL_TO expression:r
+		    {: RESULT = new BooleanExpression(l,r,
+		           Node.SEM_EQUAL_TO);
+		    :}
+		    |
+		    expression:l NEQUAL_TO expression:r
+		    {: RESULT = new BooleanExpression(l,r,
+		           Node.SEM_NEQUAL_TO);
+		    :}
+	            ;
 
 asmt_statement	::= field:f IS expression:v
 		    {: 
