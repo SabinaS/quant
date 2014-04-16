@@ -76,6 +76,7 @@ precedence left LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
 precedence left AND, OR;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIVIDE;
+precedence left ELSE;
 
 line_block	::= line_block:lb line:ln
 		    {: lb.addChild(ln); RESULT = lb; :}
@@ -123,13 +124,13 @@ bool_seq	::= bool_exp:exp
 		    {: RESULT = new BooleanSequence(exp); :}
 		    |
 		    bool_seq:l AND bool_seq:r
-		    {: ((BooleanSequence) l).combineWith((BooleanSeqnece) r, 
+		    {: ((BooleanSequence) l).addExp((BooleanSequence) r, 
 		           Node.SEM_AND);
 		       RESULT = l;
 		    :}
 		    |
 		    bool_seq:l OR bool_seq:r
-		    {: ((BooleanSequence) l).combineWith((BooleanSequence) r, 
+		    {: ((BooleanSequence) l).addExp((BooleanSequence) r, 
 		           Node.SEM_OR);
 		       RESULT = l;
 		    :}

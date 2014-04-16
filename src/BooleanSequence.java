@@ -25,17 +25,17 @@ public class BooleanSequence implements Node{
      */
     public void addExp(BooleanSequence seq, int boolop){
         operators.add(boolop);
-        int[] ops = seq.getOps();
-        Node[] exps = seq.getExpressions();
+        Integer[] ops = seq.getOps();
+        Node[] exps = seq.getExps();
         for(int i = 0; i < ops.length; i++){
             expressions.add(exps[i]);
             if(i > 0)
-                operations.add(ops[i-1]);
+                operators.add(ops[i-1]);
         }
     }
 
-    public Node[] getExps(){ return expressions.toArray(); }
-    public int[] getOps(){ return operations.toArray(); }
+    public Node[] getExps(){ return (Node[]) expressions.toArray(); }
+    public Integer[] getOps(){ return (Integer[]) operators.toArray(); }
 
     /**
      * When a boolean expression is added,
@@ -48,7 +48,7 @@ public class BooleanSequence implements Node{
     }
 
     public Node[] getChildren(){
-        Node[] children = expressions.toArray();
+        Node[] children = (Node[]) expressions.toArray();
         return children;
     }
 

@@ -20,7 +20,7 @@ public class StatementSequence implements Node{
     }
 
     public Node[] getChildren(){
-        Node[] children = statements.toArray();
+        Node[] children = (Node[]) statements.toArray();
         return children;
     }
 

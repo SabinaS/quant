@@ -87,7 +87,7 @@ identifier	= [A-Za-z]+
 {divide}	{ return getSymbol(sym.DIVIDE); }
 {less_than}	{ return getSymbol(sym.LESS_THAN); }
 {greater_than}	{ return getSymbol(sym.GREATER_THAN); }
-{equal_to}	{ return getsymbol(sym.EQUAL_TO); }
+{equal_to}	{ return getSymbol(sym.EQUAL_TO); }
 {string}	{ return getSymbol(sym.STRING_LITERAL, yytext()); }
 {print}		{ return getSymbol(sym.PRINT); }
 {is}		{ return getSymbol(sym.IS); }
