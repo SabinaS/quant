@@ -115,6 +115,11 @@ stmt_sequence	::= statement:s
 		    {: seq.addChild(stmt);
 		       RESULT = seq;
 		    :}
+		    |
+		    stmt_sequence:seq AND statement:stmt
+		    {: seq.addChild(stmt);
+		       RESULT = seq;
+		    :}
 
 		    ;
 
