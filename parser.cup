@@ -34,7 +34,7 @@ terminal PRINT;
 terminal IS_A;
 terminal IS;
 terminal SET;
-terminal TO; 
+terminal TO, THAN, NOT; 
 terminal IF, THEN, ELSE, WHILE;
 terminal LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
 terminal AND, OR;
@@ -69,6 +69,7 @@ non terminal Node expression;
 non terminal Node field;
 non terminal Node cond_block;
 non terminal Node if_then_else;
+non terminal Node while;
 non terminal Node bool_seq;
 non terminal Node bool_exp;
 
@@ -109,10 +110,19 @@ stmt_sequence	::= statement:s
 		    {: seq.addChild(stmt);
 		       RESULT = seq;
 		    :}
+		    |
+		    stmt_sequence:seq CONNECTOR AND statement:stmt
+		    {: seq.addChild(stmt);
+		       RESULT = seq;
+		    :}
+
 		    ;
 
 cond_block	::= if_then_else:i
 		    {: RESULT = i; :}
+		    |
+		    while:w
+		    {: RESULT = w; :}
 		    ;
 
 if_then_else	::= IF bool_seq:cond CONNECTOR THEN stmt_sequence:t_seq PERIOD
@@ -130,6 +140,10 @@ if_then_else	::= IF bool_seq:cond CONNECTOR THEN stmt_sequence:t_seq PERIOD
 		        PERIOD ELSE CONNECTOR stmt_sequence:f_seq PERIOD
 		    {: RESULT = new IfElseBlock(cond,t_seq,f_seq); :}
 
+		    ;
+
+while		::= WHILE bool_seq:cond CONNECTOR stmt_sequence:t_seq PERIOD
+		    {: RESULT = new WhileBlock(cond, t_seq); :}
 		    ;
 
 bool_seq	::= bool_exp:exp
@@ -164,27 +178,33 @@ bool_exp	::= expression:l LESS_THAN expression:r
 		           Node.SEM_EQUAL_TO);
 		    :}
 		    |
+		    expression:l IS expression:r
+		    {: RESULT = new BooleanExpression(l,r,
+		           Node.SEM_EQUAL_TO);
+		    :}
+		    |
+
 		    expression:l NEQUAL_TO expression:r
 		    {: RESULT = new BooleanExpression(l,r,
 		           Node.SEM_NEQUAL_TO);
 		    :}
 		    |
-                    expression:l IS LESS_THAN expression:r
+                    expression:l IS LESS_THAN THAN expression:r
 		    {: RESULT = new BooleanExpression(l,r, Node.SEM_LESS_THAN);
                        System.out.println("boolexp found");
 		    :}
 		    |
-		    expression:l IS GREATER_THAN expression:r
+		    expression:l IS GREATER_THAN THAN expression:r
 		    {: RESULT = new BooleanExpression(l,r, 
                            Node.SEM_GREATER_THAN);
 		    :}
 		    |
-		    expression:l IS EQUAL_TO expression:r
+		    expression:l IS EQUAL_TO TO expression:r
 		    {: RESULT = new BooleanExpression(l,r,
 		           Node.SEM_EQUAL_TO);
 		    :}
 		    |
-		    expression:l IS NEQUAL_TO expression:r
+		    expression:l IS NOT EQUAL_TO TO expression:r
 		    {: RESULT = new BooleanExpression(l,r,
 		           Node.SEM_NEQUAL_TO);
 		    :}
@@ -201,7 +221,7 @@ asmt_statement	::= field:f IS expression:v
 		                        Node.ASSMNT_MODE);
 		    :}
 		    |
-		    SET field:f TO value:v
+		    SET field:f TO expression:v
 		    {: if(v.getSemanticRepresentation().equals("STRING"))
 		           ((Variable) f).setType(SymbolRecord.STRING_TYPE);
 		       else

@@ -16,6 +16,7 @@ import java_cup.runtime.*;
 
 %cup
 %line
+%debug
 %column
 %unicode              /* turn on debugging for now */
 %class QuantLexer
@@ -50,26 +51,29 @@ plus		= (\+|Plus|plus)
 minus		= (\-|Minus|minus)
 times		= (\*|Times|times)
 divide		= (\\|divided by|over)
-less_than	= (\<|is less than|are less than|less than)
-greater_than	= (\>|is greater than|are greater than|greater than)
-equal_to	= (\=|equals|is equal to|are equal to)
 and		= (\&\&|and)
 or		= (\|\||or)
 
-connector	= (\,|\, and|;|; and)
+connector	= (\,|\;|\:)
 period		= \.
 lparen		= \(
 rparen		= \)
 
-is_a		= ( is a )
-is		= ( is )
-if		= (if|If)
+is_a		= (is a )
+is		= (is |are )
+if		= (if |If )
 then		= (then|Then)
 else		= (else|Else)
 while		= (while|While)
 print		= (print |Print )
 set		= (Set |set )
 to		= ( to )
+than		= (than)
+less_than	= (\<|less )
+greater_than	= (\>|greater )
+equal_to	= (\=|equals |equal )
+nequal_to	= (\!\=)
+not		= (not)
 
 whitespace	= [ \n\t]
 
@@ -85,15 +89,22 @@ identifier	= [A-Za-z]+
 {minus}		{ return getSymbol(sym.MINUS); }
 {times}		{ return getSymbol(sym.TIMES); }
 {divide}	{ return getSymbol(sym.DIVIDE); }
+{if}		{ return getSymbol(sym.IF); }
+{then}		{ return getSymbol(sym.THEN); }
+{else}		{ return getSymbol(sym.ELSE); }
+{while}		{ return getSymbol(sym.WHILE); }
 {less_than}	{ return getSymbol(sym.LESS_THAN); }
 {greater_than}	{ return getSymbol(sym.GREATER_THAN); }
 {equal_to}	{ return getSymbol(sym.EQUAL_TO); }
+{nequal_to}	{ return getSymbol(sym.NEQUAL_TO); }
 {string}	{ return getSymbol(sym.STRING_LITERAL, yytext()); }
 {print}		{ return getSymbol(sym.PRINT); }
 {is}		{ return getSymbol(sym.IS); }
 {is_a}		{ return getSymbol(sym.IS_A); }
 {set}		{ return getSymbol(sym.SET); }
 {to}		{ return getSymbol(sym.TO); }
+{than}		{ return getSymbol(sym.THAN); }
+{not}		{ return getSymbol(sym.NOT); }
 {lparen}	{ return getSymbol(sym.LPAREN); }
 {rparen}	{ return getSymbol(sym.RPAREN); }
 {connector}	{ return getSymbol(sym.CONNECTOR); }
