@@ -25,7 +25,18 @@ public class StatementSequence implements Node{
     }
 
     public String[] translate(){
-        String[] translation = {""};
+        String block = "";
+        for(Node child : statements){
+            String[] cTranslation = child.translate();
+            // line-level translations will be of length 2
+            if(cTranslation[0].equals(Translator.IN_PLACE)){
+                block = block + "\n" + cTranslation[1];
+                if(child.getSemanticRepresentation().equals("stmt"))
+                    block = block+";\n";
+	    }
+        }
+
+        String[] translation = { Translator.IN_PLACE, block };
         return translation;
     }
 

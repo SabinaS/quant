@@ -9,51 +9,39 @@ import java.util.*;
 
 public class BooleanSequence implements Node{
 
-    /** Component boolean expressions. */
-    private LinkedList<Node> expressions;
-    /** Boolean operators between expressions. */
-    private LinkedList<Integer> operators;
+    /** Expression or sequence in the left portion of the sequece. */
+    private Node left;
+    private Integer operator;
+    /** Expression or sequence in the right portion of the sequence. */
+    private Node right;
 
-    public BooleanSequence(Node exp){
-        expressions = new LinkedList<Node>();
-        expressions.add(exp);
-        operators = new LinkedList<Integer>();
+    public BooleanSequence(Node l, Node r, int op){
+        left = l;
+        right = r;
+        operator = op;
     }
 
-    /**
-     * Combines boolean sequences.
-     */
-    public void addExp(BooleanSequence seq, int boolop){
-        operators.add(boolop);
-        Integer[] ops = seq.getOps();
-        Node[] exps = seq.getExps();
-        for(int i = 0; i < ops.length; i++){
-            expressions.add(exps[i]);
-            if(i > 0)
-                operators.add(ops[i-1]);
-        }
-    }
-
-    public Node[] getExps(){ return (Node[]) expressions.toArray(); }
-    public Integer[] getOps(){ return (Integer[]) operators.toArray(); }
-
-    /**
-     * When a boolean expression is added,
-     * so is an operator.  Boolean Sequence
-     * implements an addExpression function
-     * to be used instead.
-     */
+    // Do not need to implement -- no children
+    // are added after construction.
     public void addChild(Node n){
         return;
     }
 
     public Node[] getChildren(){
-        Node[] children = (Node[]) expressions.toArray();
+        Node[] children = { left, right };
         return children;
     }
 
     public String[] translate(){
-        String[] translation = {""};
+        String[] translation = new String[2];
+        translation[0] = Translator.IN_PLACE;
+        if(operator == -1)
+            translation[1] = left.translate()[1];
+        else{
+            translation[1] = "("+left.translate()[1]+
+                ((operator == Node.SEM_AND) ? "&&" : "||") +
+                right.translate()[1]+")";
+        }
         return translation;
     }
 

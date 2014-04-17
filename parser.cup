@@ -87,6 +87,9 @@ line_block	::= line_block:lb line:ln
 
 line		::= statement:stmt line_terminator:lt
 		    {: RESULT = new Line(stmt, lt); :}
+                    |
+                    cond_block:cb
+		    {: RESULT = cb; :}
                     ;		    
 
 statement	::= optv_statement:ostmt
@@ -94,13 +97,13 @@ statement	::= optv_statement:ostmt
 		    |
 		    asmt_statement:astmt
 		    {: RESULT = new Statement(astmt); :}
-		    |
-		    cond_block:cb
-		    {: RESULT = new Statement(cb); :}
 		    ;
 
 stmt_sequence	::= statement:s
 		    {: RESULT = new StatementSequence(s); :}
+		    |
+		    cond_block:cb
+		    {: RESULT = new StatementSequence(cb); :}
 		    |
 		    stmt_sequence:seq CONNECTOR statement:stmt
 		    {: seq.addChild(stmt);
@@ -112,27 +115,34 @@ cond_block	::= if_then_else:i
 		    {: RESULT = i; :}
 		    ;
 
-if_then_else	::= IF bool_seq:cond CONNECTOR THEN stmt_sequence:t_seq
+if_then_else	::= IF bool_seq:cond CONNECTOR THEN stmt_sequence:t_seq PERIOD
 		    {: RESULT = new IfElseBlock(cond,t_seq,null); :}
 		    |
 		    IF bool_seq:cond CONNECTOR THEN stmt_sequence:t_seq
-		        PERIOD ELSE CONNECTOR stmt_sequence:f_seq
+		        PERIOD ELSE CONNECTOR stmt_sequence:f_seq PERIOD
 		    {: RESULT = new IfElseBlock(cond,t_seq,f_seq); :}
+		    |
+		    
+                    IF bool_seq:cond CONNECTOR stmt_sequence:t_seq PERIOD
+		    {: RESULT = new IfElseBlock(cond,t_seq,null); :}
+		    |
+		    IF bool_seq:cond CONNECTOR stmt_sequence:t_seq
+		        PERIOD ELSE CONNECTOR stmt_sequence:f_seq PERIOD
+		    {: RESULT = new IfElseBlock(cond,t_seq,f_seq); :}
+
 		    ;
 
 bool_seq	::= bool_exp:exp
-		    {: RESULT = new BooleanSequence(exp); :}
+		    {:  System.out.println("bool seq found");
+                        RESULT = new BooleanSequence(exp,null,-1); 
+                    :}
 		    |
 		    bool_seq:l AND bool_seq:r
-		    {: ((BooleanSequence) l).addExp((BooleanSequence) r, 
-		           Node.SEM_AND);
-		       RESULT = l;
+		    {: RESULT = new BooleanSequence(l,r,Node.SEM_AND);
 		    :}
 		    |
 		    bool_seq:l OR bool_seq:r
-		    {: ((BooleanSequence) l).addExp((BooleanSequence) r, 
-		           Node.SEM_OR);
-		       RESULT = l;
+		    {: RESULT = new BooleanSequence(l,r,Node.SEM_OR);
 		    :}
 		    |
 		    LPAREN bool_seq:s RPAREN
@@ -141,6 +151,7 @@ bool_seq	::= bool_exp:exp
 
 bool_exp	::= expression:l LESS_THAN expression:r
 		    {: RESULT = new BooleanExpression(l,r, Node.SEM_LESS_THAN);
+                       System.out.println("boolexp found");
 		    :}
 		    |
 		    expression:l GREATER_THAN expression:r
@@ -157,6 +168,27 @@ bool_exp	::= expression:l LESS_THAN expression:r
 		    {: RESULT = new BooleanExpression(l,r,
 		           Node.SEM_NEQUAL_TO);
 		    :}
+		    |
+                    expression:l IS LESS_THAN expression:r
+		    {: RESULT = new BooleanExpression(l,r, Node.SEM_LESS_THAN);
+                       System.out.println("boolexp found");
+		    :}
+		    |
+		    expression:l IS GREATER_THAN expression:r
+		    {: RESULT = new BooleanExpression(l,r, 
+                           Node.SEM_GREATER_THAN);
+		    :}
+		    |
+		    expression:l IS EQUAL_TO expression:r
+		    {: RESULT = new BooleanExpression(l,r,
+		           Node.SEM_EQUAL_TO);
+		    :}
+		    |
+		    expression:l IS NEQUAL_TO expression:r
+		    {: RESULT = new BooleanExpression(l,r,
+		           Node.SEM_NEQUAL_TO);
+		    :}
+
 	            ;
 
 asmt_statement	::= field:f IS expression:v

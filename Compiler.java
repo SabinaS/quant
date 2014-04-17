@@ -44,7 +44,7 @@ public class Compiler {
             p.waitFor(); // Wait for the process to terminate
 
             File file = new File(intermediateFile);
-            file.delete();
+            //file.delete();
         } catch(Exception e){ e.printStackTrace(); }
     }
 }

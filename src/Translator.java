@@ -98,6 +98,26 @@ public class Translator{
 	    "        if(nm == 0) return new NUMVAL((int)(tv/nv),vu);\n"+
             "        else return new NUMVAL(tv/nv,vu);\n"+
             "    }\n"+
+            "    public boolean VALLT(NUMVAL n){\n"+
+            "        double tv = vi + vr;\n"+
+            "        double nv = n.vi + n.vr;\n"+
+            "        return (tv<nv);\n"+
+            "    }\n"+
+            "    public boolean VALGT(NUMVAL n){\n"+
+            "        double tv = vi + vr;\n"+
+            "        double nv = n.vi + n.vr;\n"+
+            "        return (tv>nv);\n"+
+            "    }\n"+
+            "    public boolean VALEQ(NUMVAL n){\n"+
+            "        double tv = vi + vr;\n"+
+            "        double nv = n.vi + n.vr;\n"+
+            "        return (tv==nv);\n"+
+            "    }\n"+
+            "    public boolean VALNEQ(NUMVAL n){\n"+
+            "        double tv = vi + vr;\n"+
+            "        double nv = n.vi + n.vr;\n"+
+            "        return (tv!=nv);\n"+
+            "    }\n"+
             "}";
         public static final String UNIT_STRUCTURE =
             "class UNIT{\n"+

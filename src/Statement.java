@@ -46,6 +46,6 @@ public class Statement implements Node{
 
     public String getSemanticRepresentation(){
         // TODO
-        return "";
+        return "stmt";
     }
 }

@@ -52,8 +52,8 @@ public class Variable implements Node{
     }
     
     public String getSemanticRepresentation(){
-        // TODO
-        return "";
+        // Return the type of the variable.
+        return symrecord.getType(name);
     }
 
     public String getName(){ return name; }

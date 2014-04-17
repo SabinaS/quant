@@ -53,7 +53,12 @@ public class Line implements Node{
         // semantic type of the terminator.
         String[] translation = {""};
 
-        if( ((Terminator) terminator).getType() == Node.IMP_TERM ){
+        if(terminator == null){
+            translation = new String[2];
+            translation[0] = Translator.IN_PLACE;
+            translation[1] = qualifier.translate()[1];
+        }
+        else if( ((Terminator) terminator).getType() == Node.IMP_TERM ){
             // Always translate an imperative line in place.
             // The qualifier's directive can be ignored.
             translation = new String[2];

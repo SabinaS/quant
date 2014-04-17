@@ -28,8 +28,14 @@ public class IfElseBlock implements Node{
     }
 
     public String[] translate(){
-        String[] arr = { "" };
-        return arr;
+        String[] translation = new String[2];
+        translation[0] = Translator.IN_PLACE;
+        translation[1] = "if("+condition.translate()[1]+"){\n"+
+                         trueSequence.translate()[1]+"}\n";
+        if(falseSequence!=null)
+            translation[1] = translation[1] + "else{\n" +
+            falseSequence.translate()[1]+"}\n";
+        return translation;
     }
 
     public String getSemanticRepresentation(){

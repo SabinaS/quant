@@ -11,7 +11,7 @@ src = ./src/*
 
 .PHONY: lexer
 lexparse:
-	java -jar $(cup) -expect 3 -nopositions -nowarn parser.cup
+	java -jar $(cup) -nopositions -nowarn parser.cup
 	java -jar $(jflex) lexer.jflex
 
 compiler:
