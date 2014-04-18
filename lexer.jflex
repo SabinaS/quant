@@ -75,6 +75,10 @@ greater_than	= (\>|greater )
 equal_to	= (\=|equals |equal )
 nequal_to	= (\!\=)
 not		= (not)
+there		= (there|There)
+in		= (in)
+for		= (for)
+every 		= (every)
 
 whitespace	= [ \n\t]
 
@@ -105,6 +109,7 @@ identifier	= [A-Za-z]+
 {set}		{ return getSymbol(sym.SET); }
 {to}		{ return getSymbol(sym.TO); }
 {than}		{ return getSymbol(sym.THAN); }
+{there}		{ return getSymbol(sym.THERE); }
 {not}		{ return getSymbol(sym.NOT); }
 {lparen}	{ return getSymbol(sym.LPAREN); }
 {rparen}	{ return getSymbol(sym.RPAREN); }
@@ -113,6 +118,9 @@ identifier	= [A-Za-z]+
 {colon}		{ return getSymbol(sym.COLON); }
 {and}		{ return getSymbol(sym.AND); }
 {or}		{ return getSymbol(sym.OR); }
+{in}		{ return getSymbol(sym.IN); }
+{for}		{ return getSymbol(sym.FOR); }
+{every}		{ return getSymbol(sym.EVERY); }
 {period}	{ return getSymbol(sym.PERIOD); }
 {whitespace}    { /* Ignore. */ }
 {identifier}	{ // Will need to add symbol table management.
