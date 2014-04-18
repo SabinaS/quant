@@ -26,4 +26,12 @@ public class Terminator implements Node{
         // TODO
         return "";
     }
+   
+    /**
+     * Returns the type of terminator.
+     * @author Aubrey
+     */
+    public int getType(){
+        return which;
+    }
 }

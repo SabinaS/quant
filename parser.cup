@@ -9,19 +9,49 @@
 
 import java_cup.runtime.*;
 
+action code {:
+    public SymbolRecord symrecord = new SymbolRecord();
+    public void identClassError(String identifier, int expected, int found){
+        System.out.println("Error: '"+identifier+"' is used as a "+
+            SymbolRecord.CLASSES[expected]+" but is a "+
+            SymbolRecord.CLASSES[found]+".");
+        System.exit(0);
+    }
+    public void notDefinedError(String identifier){
+        System.out.println("Error: '"+identifier+"' is not defined.");
+        System.exit(0);
+    }
+:}
+
 parser code {:
 :}
 
 /*
- * Symbol definitions
+ * Symbol definitions`
  */
 
 terminal PRINT;
+terminal IS_A;
+terminal IS;
+terminal SET;
+terminal TO, THAN, NOT; 
+terminal IF, THEN, ELSE, WHILE;
+terminal LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
+terminal AND, OR;
+terminal THERE; 
+terminal IN;
+terminal FOR;
+terminal EVERY; 
 
+terminal String IDENTIFIER;
 terminal String STRING_LITERAL;
+terminal Integer INTEGER_LITERAL;
+terminal Double RATIONAL_LITERAL;
 
-terminal PERIOD;
-
+terminal LPAREN, RPAREN;
+terminal PLUS, MINUS, TIMES, DIVIDE;
+terminal PERIOD, COLON, SEMICOLON;
+terminal CONNECTOR;
 terminal INVALID;
 
 /*
@@ -30,10 +60,30 @@ terminal INVALID;
 non terminal Node line_block;
 non terminal Node line;
 non terminal Node statement;
+non terminal Node stmt_sequence;
 non terminal Node optv_statement;
+non terminal Node asmt_statement;
 non terminal Node line_terminator;
 non terminal Node operative_kwd;
 non terminal Node value;
+non terminal Node quantity;
+non terminal Node number;
+non terminal Node unit;
+non terminal Node expression;
+non terminal Node field;
+non terminal Node cond_block;
+non terminal Node if_then_else;
+non terminal Node while;
+non terminal Node bool_seq;
+non terminal Node bool_exp;
+non terminal conjunctive;
+non terminal rate_dec; 
+
+precedence left LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
+precedence left AND, OR;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE;
+precedence left ELSE;
 
 line_block	::= line_block:lb line:ln
 		    {: lb.addChild(ln); RESULT = lb; :}
@@ -44,22 +94,255 @@ line_block	::= line_block:lb line:ln
 
 line		::= statement:stmt line_terminator:lt
 		    {: RESULT = new Line(stmt, lt); :}
-		    ;
+                    |
+                    cond_block:cb
+		    {: RESULT = cb; :}
+                    ;
+
+rate_dec	::= THERE IS number:num unit:unit IN number:num2 unit:unit2
+		    {: :} 
+		    |
+		    THERE IS number:num unit:unit FOR EVERY number:num2 unit:unit2
+		    ;	    
 
 statement	::= optv_statement:ostmt
 		    {: RESULT = new Statement(ostmt); :}
+		    |
+		    asmt_statement:astmt
+		    {: RESULT = new Statement(astmt); :}
 		    ;
 
-optv_statement	::= operative_kwd:kwd value:v
-		    {: RESULT = new OperativeStatement(kwd, v); :}
+stmt_sequence	::= statement:s
+		    {: RESULT = new StatementSequence(s); :}
+		    |
+		    cond_block:cb
+		    {: RESULT = new StatementSequence(cb); :}
+		    |
+		    stmt_sequence:seq CONNECTOR statement:stmt
+		    {: seq.addChild(stmt);
+		       RESULT = seq;
+		    :}
+		    |
+		    stmt_sequence:seq CONNECTOR AND statement:stmt
+		    {: seq.addChild(stmt);
+		       RESULT = seq;
+		    :}
+		    |
+		    cond_block:cb statement:s
+		    {: StatementSequence seq = new StatementSequence(cb);
+		       seq.addChild(s);
+		       RESULT = seq;
+		    :}
+		    |
+		    cond_block:cb cond_block:cb2
+		    {: StatementSequence seq = new StatementSequence(cb);
+		       seq.addChild(cb2);
+		       RESULT = seq;
+		    :}
+		    |
+
+		    stmt_sequence:seq AND statement:stmt
+		    {: seq.addChild(stmt);
+		       RESULT = seq;
+		    :}
+
+		    ;
+
+cond_block	::= if_then_else:i
+		    {: RESULT = i; :}
+		    |
+		    while:w
+		    {: RESULT = w; :}
+		    ;
+
+if_then_else	::= IF bool_seq:cond CONNECTOR THEN stmt_sequence:t_seq 
+		        conjunctive
+		    {: RESULT = new IfElseBlock(cond,t_seq,null); :}
+		    |
+		    IF bool_seq:cond CONNECTOR THEN stmt_sequence:t_seq
+		        conjunctive ELSE CONNECTOR stmt_sequence:f_seq 
+		            conjunctive
+		    {: RESULT = new IfElseBlock(cond,t_seq,f_seq); :}
+		    |
+		    
+                    IF bool_seq:cond CONNECTOR stmt_sequence:t_seq conjunctive
+		    {: RESULT = new IfElseBlock(cond,t_seq,null); :}
+		    |
+		    IF bool_seq:cond CONNECTOR stmt_sequence:t_seq
+		        conjunctive ELSE CONNECTOR stmt_sequence:f_seq 
+		            conjunctive
+		    {: RESULT = new IfElseBlock(cond,t_seq,f_seq); :}
+
+		    ;
+
+conjunctive	::= SEMICOLON
+		    |
+		    PERIOD
+		    ;
+
+while		::= WHILE bool_seq:cond CONNECTOR stmt_sequence:t_seq PERIOD
+		    {: RESULT = new WhileBlock(cond, t_seq); :}
+		    ;
+
+bool_seq	::= bool_exp:exp
+		    {:  System.out.println("bool seq found");
+                        RESULT = new BooleanSequence(exp,null,-1); 
+                    :}
+		    |
+		    bool_seq:l AND bool_seq:r
+		    {: RESULT = new BooleanSequence(l,r,Node.SEM_AND);
+		    :}
+		    |
+		    bool_seq:l OR bool_seq:r
+		    {: RESULT = new BooleanSequence(l,r,Node.SEM_OR);
+		    :}
+		    |
+		    LPAREN bool_seq:s RPAREN
+		    {: RESULT = s; :}
+		    ;
+
+bool_exp	::= expression:l LESS_THAN expression:r
+		    {: RESULT = new BooleanExpression(l,r, Node.SEM_LESS_THAN);
+                       System.out.println("boolexp found");
+		    :}
+		    |
+		    expression:l GREATER_THAN expression:r
+		    {: RESULT = new BooleanExpression(l,r, 
+                           Node.SEM_GREATER_THAN);
+		    :}
+		    |
+		    expression:l EQUAL_TO expression:r
+		    {: RESULT = new BooleanExpression(l,r,
+		           Node.SEM_EQUAL_TO);
+		    :}
+		    |
+		    expression:l IS expression:r
+		    {: RESULT = new BooleanExpression(l,r,
+		           Node.SEM_EQUAL_TO);
+		    :}
+		    |
+
+		    expression:l NEQUAL_TO expression:r
+		    {: RESULT = new BooleanExpression(l,r,
+		           Node.SEM_NEQUAL_TO);
+		    :}
+		    |
+                    expression:l IS LESS_THAN THAN expression:r
+		    {: RESULT = new BooleanExpression(l,r, Node.SEM_LESS_THAN);
+                       System.out.println("boolexp found");
+		    :}
+		    |
+		    expression:l IS GREATER_THAN THAN expression:r
+		    {: RESULT = new BooleanExpression(l,r, 
+                           Node.SEM_GREATER_THAN);
+		    :}
+		    |
+		    expression:l IS EQUAL_TO TO expression:r
+		    {: RESULT = new BooleanExpression(l,r,
+		           Node.SEM_EQUAL_TO);
+		    :}
+		    |
+		    expression:l IS NOT EQUAL_TO TO expression:r
+		    {: RESULT = new BooleanExpression(l,r,
+		           Node.SEM_NEQUAL_TO);
+		    :}
+
+	            ;
+
+asmt_statement	::= field:f IS expression:v
+		    {: 
+		       if(v.getSemanticRepresentation().equals("STRING"))
+		           ((Variable) f).setType(SymbolRecord.STRING_TYPE);
+		       else
+		           ((Variable) f).setType(SymbolRecord.QUANTITY_TYPE);
+		       RESULT = new AssignmentStatement(f,v,
+		                        Node.ASSMNT_MODE);
+		    :}
+		    |
+		    SET field:f TO expression:v
+		    {: if(v.getSemanticRepresentation().equals("STRING"))
+		           ((Variable) f).setType(SymbolRecord.STRING_TYPE);
+		       else
+		           ((Variable) f).setType(SymbolRecord.QUANTITY_TYPE);
+		       RESULT = new AssignmentStatement(f,v,
+		                        Node.ASSMNT_MODE);
+		    :}	
+		    ;
+
+optv_statement	::= operative_kwd:kwd expression:e
+		    {: RESULT = new OperativeStatement(kwd, e); :}
 		    ;
 
 operative_kwd	::= PRINT
 		    {: RESULT = new OperativeKeyword(Node.SEM_PRINT_KWD); :}
 		    ;
 
+expression	::= expression:l PLUS expression:r
+		    {: RESULT = new Expression(l,r, Node.SEM_PLUS); :}
+		    |
+		    expression:l MINUS expression:r
+		    {: RESULT = new Expression(l,r, Node.SEM_MINUS); :}
+    		    |
+		    expression:l TIMES expression:r
+		    {: RESULT = new Expression(l,r, Node.SEM_TIMES); :}
+		    |
+		    expression:l DIVIDE expression:r
+		    {: RESULT = new Expression(l,r, Node.SEM_DIVIDE); :}
+		    |
+		    value:v
+		    {: RESULT = v; :}
+		    |
+		    LPAREN expression:v RPAREN
+		    {: RESULT = v; :}
+                    ;
+
 value		::= STRING_LITERAL:s
 		    {: RESULT = new StringConstant(s); :}
+		    |
+		    quantity:q
+		    {: RESULT = new Value(q); :}
+		    |
+		    field:f
+		    {: if(symrecord.getType(((Variable) f).getName())==null)
+		           notDefinedError(((Variable) f).getName());
+		       RESULT = f;
+		    :}
+		    ;
+
+quantity	::= number:num unit:u
+		    {: RESULT = new Quantity(num, u); :}
+                    |
+		    number:num
+		    {: RESULT = new Quantity(num, null); :}
+		    ;
+
+number		::= INTEGER_LITERAL:num
+		    {: RESULT = new Number(num); :}
+		    |
+		    RATIONAL_LITERAL:num
+		    {: RESULT = new Number(num); :}
+		    ;
+
+unit		::= IDENTIFIER:ident
+		    {: 
+                       int prevClass = 
+			   symrecord.setClass(ident, SymbolRecord.UNIT_CLASS);
+                       if(prevClass != 0)
+		           identClassError(ident, SymbolRecord.UNIT_CLASS, 
+	 	               prevClass);
+		       RESULT = new Unit(ident);
+                    :}
+		    ;
+
+field		::= IDENTIFIER:ident
+		    {:
+		       int prevClass = 
+		        symrecord.setClass(ident, SymbolRecord.VARIABLE_CLASS);
+		       if(prevClass != 0)
+		           identClassError(ident, SymbolRecord.VARIABLE_CLASS,
+		               prevClass);
+		       RESULT = new Variable(ident, symrecord);
+		    :}
 		    ;
 
 line_terminator ::= PERIOD

@@ -33,8 +33,24 @@ public class OperativeKeyword implements Node{
     }
 
     public String[] translate(){
-        // TODO
-        String[] arr = {""};
+        // Aubrey
+        // implement using a case for each
+        // semantic keyword
+        String[] arr;
+
+        switch (kwd){
+            case Node.SEM_PRINT_KWD:
+                arr = new String[4];
+                arr[0] = Translator.IN_PLACE;
+                arr[1] = "System.out.println(";
+                arr[2] = Translator.AFTER_SIBLING;
+                arr[3] = ".toString())";
+                break;
+            default:
+                arr = new String[1];
+                arr[0] = "";
+        } 
+
         return arr;
     }
 

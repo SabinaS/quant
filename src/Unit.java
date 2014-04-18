@@ -31,8 +31,10 @@ public class Unit implements Node{
 
     public String[] translate(){
         // TODO
-        String[] arr = {""};
-        return arr;
+        String[] translation = new String[2];
+        translation[0] = Translator.IN_PLACE;
+        translation[1] = unit;
+        return translation;
     }
 
     public String getSemanticRepresentation(){

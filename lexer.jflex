@@ -15,9 +15,7 @@ import java_cup.runtime.*;
  */
 
 %cup
-%cupdebug            /* turn on character counting now, for debugging */
 %line
-%debug
 %column
 %unicode              /* turn on debugging for now */
 %class QuantLexer
@@ -31,10 +29,10 @@ import java_cup.runtime.*;
  /**
   * Return a vanilla symbol (token ID only).
   */
- Symbol getSymbol(int tokenID){
+ public Symbol getSymbol(int tokenID){
      return new Symbol(tokenID, yyline, yycolumn);
  }
- Symbol getSymbol(int tokenID, Object value){
+ public Symbol getSymbol(int tokenID, Object value){
      return new Symbol(tokenID, yyline, yycolumn, value);
  }
 
@@ -45,20 +43,87 @@ import java_cup.runtime.*;
  */
 
 string		= \"[^\"]*\"
+integer		= ( [\-])?[0-9]+
+rat_num		= ( [\-])?[0-9]+\.[0-9]+
 
+plus		= (\+|Plus|plus)
+minus		= (\-|Minus|minus)
+times		= (\*|Times|times)
+divide		= (\\|divided by|over)
+and		= (\&\&|and)
+or		= (\|\||or)
+
+connector	= (\,|now)
+semicolon	= (\;)
+colon		= (\:)
 period		= \.
+lparen		= \(
+rparen		= \)
 
-print		= (print|Print)
+is_a		= (is a )
+is		= (is |are )
+if		= (if |If )
+then		= (then|Then)
+else		= (else|Else)
+while		= (while|While)
+print		= (print |Print )
+set		= (Set |set )
+to		= ( to )
+than		= (than)
+less_than	= (\<|less )
+greater_than	= (\>|greater )
+equal_to	= (\=|equals |equal )
+nequal_to	= (\!\=)
+not		= (not)
+there		= (there|There)
+in		= (in)
+for		= (for)
+every 		= (every)
 
 whitespace	= [ \n\t]
+
+identifier	= [A-Za-z]+
 
 %%
 /**
  * Lexical rules (--Aubrey)
  */
-
+{integer}	{ return getSymbol(sym.INTEGER_LITERAL, new Integer(yytext())); }
+{rat_num}	{ return getSymbol(sym.RATIONAL_LITERAL, new Double(yytext())); }
+{plus}		{ return getSymbol(sym.PLUS); }
+{minus}		{ return getSymbol(sym.MINUS); }
+{times}		{ return getSymbol(sym.TIMES); }
+{divide}	{ return getSymbol(sym.DIVIDE); }
+{if}		{ return getSymbol(sym.IF); }
+{then}		{ return getSymbol(sym.THEN); }
+{else}		{ return getSymbol(sym.ELSE); }
+{while}		{ return getSymbol(sym.WHILE); }
+{less_than}	{ return getSymbol(sym.LESS_THAN); }
+{greater_than}	{ return getSymbol(sym.GREATER_THAN); }
+{equal_to}	{ return getSymbol(sym.EQUAL_TO); }
+{nequal_to}	{ return getSymbol(sym.NEQUAL_TO); }
 {string}	{ return getSymbol(sym.STRING_LITERAL, yytext()); }
 {print}		{ return getSymbol(sym.PRINT); }
+{is}		{ return getSymbol(sym.IS); }
+{is_a}		{ return getSymbol(sym.IS_A); }
+{set}		{ return getSymbol(sym.SET); }
+{to}		{ return getSymbol(sym.TO); }
+{than}		{ return getSymbol(sym.THAN); }
+{there}		{ return getSymbol(sym.THERE); }
+{not}		{ return getSymbol(sym.NOT); }
+{lparen}	{ return getSymbol(sym.LPAREN); }
+{rparen}	{ return getSymbol(sym.RPAREN); }
+{connector}	{ return getSymbol(sym.CONNECTOR); }
+{semicolon}	{ return getSymbol(sym.SEMICOLON); }
+{colon}		{ return getSymbol(sym.COLON); }
+{and}		{ return getSymbol(sym.AND); }
+{or}		{ return getSymbol(sym.OR); }
+{in}		{ return getSymbol(sym.IN); }
+{for}		{ return getSymbol(sym.FOR); }
+{every}		{ return getSymbol(sym.EVERY); }
 {period}	{ return getSymbol(sym.PERIOD); }
 {whitespace}    { /* Ignore. */ }
+{identifier}	{ // Will need to add symbol table management.
+		  return getSymbol(sym.IDENTIFIER, yytext());
+		}
 .               { return getSymbol(sym.INVALID); }

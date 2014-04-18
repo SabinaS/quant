@@ -8,6 +8,9 @@
 
 public class Number implements Node{
 
+    public static final String INT_VAL = "INT";
+    public static final String RAT_VAL = "RAT";
+
     /** Value if number is rational. */
     private double rVal;
     /** Value if number is an integer. */
@@ -46,8 +49,18 @@ public class Number implements Node{
 
     public String[] translate(){
         //TODO
-        String[] arr = {};
-        return arr;
+        String[] translation = new String[3];
+        translation[0] = Translator.IN_PLACE;
+        translation[1] = const_type == Node.SEM_INT_CONST ? 
+            ""+iVal : ""+rVal; 
+        // Add non-literal applying directive at end
+        // to denote constant type.
+        if(const_type == Node.SEM_INT_CONST){
+            translation[2] = INT_VAL;
+        }
+        else
+            translation[2] = RAT_VAL;
+        return translation;
     }
 
     public String getSemanticRepresentation(){

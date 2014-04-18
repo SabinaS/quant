@@ -39,8 +39,19 @@ public class Quantity implements Node{
 
     public String[] translate(){
         // TODO
-        String[] arr = { "" };
-        return arr;
+        String[] translation = new String[2];
+
+        String[] num_tr = number.translate();
+        String[] unit_tr = { "", "" };
+        if(unit != null)  unit_tr = unit.translate();
+
+        String literal = "factory.new NUMVAL("+
+           (num_tr[2].equals(Number.INT_VAL) ? "new Integer(":"new Double(")+ 
+           num_tr[1]+"), factory.new UNIT(\""+unit_tr[1]+"\"))";
+
+        translation[0] = Translator.IN_PLACE;
+        translation[1] = literal;
+        return translation;
     }
 
     public String getSemanticRepresentation(){

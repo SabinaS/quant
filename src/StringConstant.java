@@ -30,12 +30,12 @@ public class StringConstant implements Node{
     }
 
     public String[] translate(){
-        // TODO
-        String[] arr = {""};
+        // Aubrey
+        String[] arr = {Translator.IN_PLACE, value};
         return arr;
     }
 
     public String getSemanticRepresentation(){
-        return "";
+        return "STRING";
     }
 }
