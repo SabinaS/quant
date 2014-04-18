@@ -16,7 +16,6 @@ import java_cup.runtime.*;
 
 %cup
 %line
-%debug
 %column
 %unicode              /* turn on debugging for now */
 %class QuantLexer
@@ -54,7 +53,9 @@ divide		= (\\|divided by|over)
 and		= (\&\&|and)
 or		= (\|\||or)
 
-connector	= (\,|\;|\:)
+connector	= (\,|now)
+semicolon	= (\;)
+colon		= (\:)
 period		= \.
 lparen		= \(
 rparen		= \)
@@ -108,6 +109,8 @@ identifier	= [A-Za-z]+
 {lparen}	{ return getSymbol(sym.LPAREN); }
 {rparen}	{ return getSymbol(sym.RPAREN); }
 {connector}	{ return getSymbol(sym.CONNECTOR); }
+{semicolon}	{ return getSymbol(sym.SEMICOLON); }
+{colon}		{ return getSymbol(sym.COLON); }
 {and}		{ return getSymbol(sym.AND); }
 {or}		{ return getSymbol(sym.OR); }
 {period}	{ return getSymbol(sym.PERIOD); }

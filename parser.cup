@@ -46,7 +46,7 @@ terminal Double RATIONAL_LITERAL;
 
 terminal LPAREN, RPAREN;
 terminal PLUS, MINUS, TIMES, DIVIDE;
-terminal PERIOD;
+terminal PERIOD, COLON, SEMICOLON;
 terminal CONNECTOR;
 terminal INVALID;
 
@@ -72,6 +72,7 @@ non terminal Node if_then_else;
 non terminal Node while;
 non terminal Node bool_seq;
 non terminal Node bool_exp;
+non terminal conjunctive;
 
 precedence left LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
 precedence left AND, OR;
@@ -116,6 +117,19 @@ stmt_sequence	::= statement:s
 		       RESULT = seq;
 		    :}
 		    |
+		    cond_block:cb statement:s
+		    {: StatementSequence seq = new StatementSequence(cb);
+		       seq.addChild(s);
+		       RESULT = seq;
+		    :}
+		    |
+		    cond_block:cb cond_block:cb2
+		    {: StatementSequence seq = new StatementSequence(cb);
+		       seq.addChild(cb2);
+		       RESULT = seq;
+		    :}
+		    |
+
 		    stmt_sequence:seq AND statement:stmt
 		    {: seq.addChild(stmt);
 		       RESULT = seq;
@@ -130,21 +144,29 @@ cond_block	::= if_then_else:i
 		    {: RESULT = w; :}
 		    ;
 
-if_then_else	::= IF bool_seq:cond CONNECTOR THEN stmt_sequence:t_seq PERIOD
+if_then_else	::= IF bool_seq:cond CONNECTOR THEN stmt_sequence:t_seq 
+		        conjunctive
 		    {: RESULT = new IfElseBlock(cond,t_seq,null); :}
 		    |
 		    IF bool_seq:cond CONNECTOR THEN stmt_sequence:t_seq
-		        PERIOD ELSE CONNECTOR stmt_sequence:f_seq PERIOD
+		        conjunctive ELSE CONNECTOR stmt_sequence:f_seq 
+		            conjunctive
 		    {: RESULT = new IfElseBlock(cond,t_seq,f_seq); :}
 		    |
 		    
-                    IF bool_seq:cond CONNECTOR stmt_sequence:t_seq PERIOD
+                    IF bool_seq:cond CONNECTOR stmt_sequence:t_seq conjunctive
 		    {: RESULT = new IfElseBlock(cond,t_seq,null); :}
 		    |
 		    IF bool_seq:cond CONNECTOR stmt_sequence:t_seq
-		        PERIOD ELSE CONNECTOR stmt_sequence:f_seq PERIOD
+		        conjunctive ELSE CONNECTOR stmt_sequence:f_seq 
+		            conjunctive
 		    {: RESULT = new IfElseBlock(cond,t_seq,f_seq); :}
 
+		    ;
+
+conjunctive	::= SEMICOLON
+		    |
+		    PERIOD
 		    ;
 
 while		::= WHILE bool_seq:cond CONNECTOR stmt_sequence:t_seq PERIOD
