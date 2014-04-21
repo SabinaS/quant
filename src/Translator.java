@@ -41,6 +41,10 @@ public class Translator{
         String[] components = AST.translate();
         StaticCode sc = new StaticCode();
         String java = "public class "+programName+"{\n"+
+        	      "public WhateverClass<String,String,Double> rates;"+
+        	      "public "+programName+"(){ rates = new Whatever()... ;}\n"+
+        	      "public void registerRate(String u1, String u2, Double v){"+
+    		      "}\n"+
                       "public static void main(String[] args){\n"+
                       sc.getFactoryStructure(programName)+"\n"+
                       components[MAIN_BLOCK_INDEX] + "\n"+
