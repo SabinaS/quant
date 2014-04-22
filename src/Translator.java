@@ -112,43 +112,53 @@ public class Translator{
             "	     if(!vu.v.equals(n.vu.v)) { mult = findRate(vu.v, n.vu.v); }\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
             "	     double nr = mult >= 1 ? tv-nv*mult : tv*mult-nv;\n"+
-            "	     UNIT ur = mult >= 1 ? vu : n.u;\n"+
+            "	     UNIT ur = mult >= 1 ? u : n.u;\n"+
 	    "        if(nm == 0) return new NUMVAL((int) nr, ur);\n"+
             "        else return new NUMVAL(nr,ur);\n"+
             "    }\n"+
-            "    public NUMVAL VALTIMES(NUMVAL n){\n"+
+            "    public NUMVAL VALTIMES(NUMVAL n){\n"+ //add squared functionality??
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
-	    "        if(nm == 0) return new NUMVAL((int)(tv*nv),vu);\n"+
-            "        else return new NUMVAL(tv*nv,vu);\n"+
+            "        UNIT ur = new UNIT(u.v +  \"*\" + n.u.v);
+	    "        if(nm == 0) return new NUMVAL((int)(tv*nv), ur);\n"+
+            "        else return new NUMVAL(tv*nv,ur);\n"+
             "    }\n"+
             "    public NUMVAL VALDIVIDE(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
-	    "        if(nm == 0) return new NUMVAL((int)(tv/nv),vu);\n"+
-            "        else return new NUMVAL(tv/nv,vu);\n"+
+            "        UNIT ur = new UNIT(u.v +  \"/\" + n.u.v);
+	    "        if(nm == 0) return new NUMVAL((int)(tv/nv), ur);\n"+
+            "        else return new NUMVAL(tv/nv, ur);\n"+
             "    }\n"+
             "    public boolean VALLT(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
-            "        return (tv<nv);\n"+
+            "        double mult = 1;\n"+
+            "	     if(!vu.v.equals(n.vu.v)) { mult = findRate(vu.v, n.vu.v); }\n"+
+            "        return (tv<nv*mult);\n"+
             "    }\n"+
             "    public boolean VALGT(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
-            "        return (tv>nv);\n"+
+            "        double mult = 1;\n"+
+            "	     if(!vu.v.equals(n.vu.v)) { mult = findRate(vu.v, n.vu.v); }\n"+
+            "        return (tv>nv*mult);\n"+
             "    }\n"+
             "    public boolean VALEQ(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
-            "        return (tv==nv);\n"+
+            "        double mult = 1;\n"+
+            "	     if(!vu.v.equals(n.vu.v)) { mult = findRate(vu.v, n.vu.v); }\n"+
+            "        return (tv==nv*mult);\n"+
             "    }\n"+
             "    public boolean VALNEQ(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
-            "        return (tv!=nv);\n"+
+            "        double mult = 1;\n"+
+            "	     if(!vu.v.equals(n.vu.v)) { mult = findRate(vu.v, n.vu.v); }\n"+
+            "        return (tv!=nv*mult);\n"+
             "    }\n"+
             "}";
         public static final String UNIT_STRUCTURE =
