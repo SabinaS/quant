@@ -41,9 +41,29 @@ public class Translator{
         String[] components = AST.translate();
         StaticCode sc = new StaticCode();
         String java = "public class "+programName+"{\n"+
-        	      "public WhateverClass<String,String,Double> rates;"+
-        	      "public "+programName+"(){ rates = new Whatever()... ;}\n"+
-        	      "public void registerRate(String u1, String u2, Double v){"+
+        	      "public ArrayList<String> rateName1;\n"+
+        	      "public ArrayList<String> rateName2;\n"+
+        	      "public ArrayList<Double> rateNum;\n"+
+        	      "public "+programName+"(){\n"+
+        	      "rateName1 = new ArrayList<String>();\n" +
+        	      "rateName2 = new ArrayList<String>();\n" +
+        	      "rateNum = new ArrayList<Double>();\n" +
+        	      "}\n"+
+        	      "public void addRate(String u1, Double n1, String u2, Double n2){\n"+
+        	      "rateName1.add(u1);\n" +
+        	      "rateName2.add(u2);\n" +
+        	      "rateNum.add(n1/n2);\n" +
+        	      "}\n"+
+        	      "public double findRate(String u1, String u2){\n"+
+        	      "for(int i = 0; i < rateName1.size(); i++) {\n"+
+        	      "if(rateName1.get(i).equals(u1)) {\n"+
+        	      "if(rateName2.get(i).equals(u2)){ return rateNum.get(i);}\n"+
+        	      "}\n"+
+        	      "if(rateName2.get(i).equals(u1)) {\n"+
+        	      "if(rateName1.get(i).equals(u2)){ return 1/(rateNum.get(i));}\n"+
+        	      "}\n"+
+        	      "}\n"+
+        	      "return 1;\n"+
     		      "}\n"+
                       "public static void main(String[] args){\n"+
                       sc.getFactoryStructure(programName)+"\n"+
@@ -77,16 +97,24 @@ public class Translator{
             "    public NUMVAL VALPLUS(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
+            "	     double mult = 1;\n"+
+            "	     if(!vu.v.equals(n.vu.v)) { mult = findRate(vu.v, n.vu.v); }\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
-	    "        if(nm == 0) return new NUMVAL((int)(tv+nv),vu);\n"+
-            "        else return new NUMVAL(tv+nv,vu);\n"+
+            "	     double nr = mult >= 1 ? tv+nv*mult : tv*mult+nv;\n"+
+            "	     UNIT ur = mult >= 1 ? vu : n.u;\n"+
+	    "        if(nm == 0) return new NUMVAL((int) nr,ur);\n"+
+            "        else return new NUMVAL(nr, ur);\n"+
             "    }\n"+
             "    public NUMVAL VALMINUS(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
+            "        double mult = 1;\n"+
+            "	     if(!vu.v.equals(n.vu.v)) { mult = findRate(vu.v, n.vu.v); }\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
-	    "        if(nm == 0) return new NUMVAL((int)(tv-nv),vu);\n"+
-            "        else return new NUMVAL(tv-nv,vu);\n"+
+            "	     double nr = mult >= 1 ? tv-nv*mult : tv*mult-nv;\n"+
+            "	     UNIT ur = mult >= 1 ? vu : n.u;\n"+
+	    "        if(nm == 0) return new NUMVAL((int) nr, ur);\n"+
+            "        else return new NUMVAL(nr,ur);\n"+
             "    }\n"+
             "    public NUMVAL VALTIMES(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
