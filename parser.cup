@@ -31,6 +31,7 @@ parser code {:
  */
 
 terminal PRINT;
+terminal A; 
 terminal IS_A;
 terminal IS;
 terminal SET;
@@ -42,6 +43,9 @@ terminal THERE;
 terminal IN;
 terminal FOR;
 terminal EVERY; 
+terminal HAS;
+terminal WITH;
+terminal HAVING; 
 
 terminal String IDENTIFIER;
 terminal String STRING_LITERAL;
@@ -78,6 +82,11 @@ non terminal Node bool_seq;
 non terminal Node bool_exp;
 non terminal conjunctive;
 non terminal rate_dec; 
+non terminal type_dec; 
+non terminal colon; 
+non terminal type_sig; 
+non terminal mem_type_chain; 
+non terminal ident_chain; 
 
 precedence left LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
 precedence left AND, OR;
@@ -103,7 +112,37 @@ rate_dec	::= THERE IS number:num unit:unit IN number:num2 unit:unit2
 		    {: :} 
 		    |
 		    THERE IS number:num unit:unit FOR EVERY number:num2 unit:unit2
-		    ;	    
+		    ;	
+type_dec	::= type_sig:type_sig colon mem_type_chain:mem_chain    
+		    {: :}
+		    |
+		    type-sig
+		    ;
+
+colon		::= COLON
+		    {: :}
+		    ; 
+
+type_sig	::= type_ref HAS ident_chain: ident_chain
+		    {: :}
+		    |
+		    type_ref WITH ident_chain: ident_chain
+		    {: :}
+		    |
+		    type_ref HAVING ident_chain: ident_chain
+		    ; 
+
+mem_type_chain  ::=
+		    {: :}
+		    ;
+
+type_ref	::= A IDENTIFIER:ident
+		    {: :}
+		    |
+		    IDENTIFIER:ident
+		    ;
+
+ident_chain  	::= 
 
 statement	::= optv_statement:ostmt
 		    {: RESULT = new Statement(ostmt); :}

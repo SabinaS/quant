@@ -60,6 +60,7 @@ period		= \.
 lparen		= \(
 rparen		= \)
 
+a		= (a)
 is_a		= (is a )
 is		= (is |are )
 if		= (if |If )
@@ -79,6 +80,8 @@ there		= (there|There)
 in		= (in)
 for		= (for)
 every 		= (every)
+has		= (has)
+having		= (having)
 
 whitespace	= [ \n\t]
 
@@ -104,12 +107,15 @@ identifier	= [A-Za-z]+
 {nequal_to}	{ return getSymbol(sym.NEQUAL_TO); }
 {string}	{ return getSymbol(sym.STRING_LITERAL, yytext()); }
 {print}		{ return getSymbol(sym.PRINT); }
+{a}		{ return getSymbol(sym.A); }
 {is}		{ return getSymbol(sym.IS); }
 {is_a}		{ return getSymbol(sym.IS_A); }
 {set}		{ return getSymbol(sym.SET); }
 {to}		{ return getSymbol(sym.TO); }
 {than}		{ return getSymbol(sym.THAN); }
 {there}		{ return getSymbol(sym.THERE); }
+{has}		{ return getSymbol(sym.HAS); }
+{having}	{ return getSymbol(sym.HAVING); }
 {not}		{ return getSymbol(sym.NOT); }
 {lparen}	{ return getSymbol(sym.LPAREN); }
 {rparen}	{ return getSymbol(sym.RPAREN); }
