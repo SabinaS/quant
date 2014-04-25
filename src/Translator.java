@@ -40,7 +40,8 @@ public class Translator{
     public String getJava(String programName){
         String[] components = AST.translate();
         StaticCode sc = new StaticCode();
-        String java = "public class "+programName+"{\n"+
+        String java = "import java.util.ArrayList;"+
+		      "public class "+programName+"{\n"+
                       "    public ArrayList<String> rateName1;\n"+
                       "    public ArrayList<String> rateName2;\n"+
                       "    public ArrayList<Double> rateNum;\n"+
@@ -49,7 +50,7 @@ public class Translator{
                       "         rateName2 = new ArrayList<String>();\n" +
                       "         rateNum = new ArrayList<Double>();\n" +
                       "    }\n"+
-                      "    public void addRate(String u1, String u2, Double rate) {\n"+
+                      "    public void registerRate(String u1, String u2, Double rate) {\n"+
                       "        rateName1.add(u1);\n" +
                       "        rateName2.add(u2);\n" +
                       "        rateNum.add(rate);\n" +
@@ -74,10 +75,20 @@ public class Translator{
                           components[MAIN_BLOCK_INDEX] + "\n"+
                           "}\n"+
                           StaticCode.VALUE_STRUCTURE+"\n"+
-                          StaticCode.UNIT_STRUCTURE+"\n"+
+                          getUnitStructure(programName)+"\n"+
                       "}";
         return java;
     }
+           public static String getUnitStructure(String pname){
+                return 
+                "class UNIT{\n"+
+                "    public String v = \"\";\n"+
+                "    public "+pname+" fact;"+
+                "    public UNIT(String u,"+pname+" f){ v = u; fact = f;}\n"+
+                "    public String toString(){"+
+                "        return v.length()>0 ? \" \"+v : \"\"; }"+
+                "}";
+            }
 
     /** Static constant container for portions of the translated
       * program not affected by AST structure.
@@ -102,10 +113,10 @@ public class Translator{
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        double mult = 1;\n"+
-            "        if(!vu.v.equals(n.vu.v)) { mult = findRate(vu.v, n.vu.v); }\n"+
+            "        if(!vu.v.equals(n.vu.v)) { mult = vu.fact.findRate(vu.v, n.vu.v); }\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
-            "        double nr = mult >= 1 ? tv+nv*mult : tv*mult+nv;\n"+
-            "        UNIT ur = mult >= 1 ? vu : n.u;\n"+
+            "        double nr = tv+nv*mult;\n"+
+            "        UNIT ur = vu;\n"+
             "        if(nm == 0) return new NUMVAL((int) nr,ur);\n"+
             "        else return new NUMVAL(nr, ur);\n"+
             "    }\n"+
@@ -113,10 +124,10 @@ public class Translator{
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        double mult = 1;\n"+
-            "        if(!vu.v.equals(n.vu.v)) { mult = findRate(vu.v, n.vu.v); }\n"+
+            "        if(!vu.v.equals(n.vu.v)) { mult = vu.fact.findRate(vu.v, n.vu.v); }\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
-            "        double nr = mult >= 1 ? tv-nv*mult : tv*mult-nv;\n"+
-            "        UNIT ur = mult >= 1 ? u : n.u;\n"+
+            "        double nr = tv-nv*mult;\n"+
+            "        UNIT ur = vu;\n"+
             "        if(nm == 0) return new NUMVAL((int) nr, ur);\n"+
             "        else return new NUMVAL(nr,ur);\n"+
             "    }\n"+
@@ -124,7 +135,7 @@ public class Translator{
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
-            "        UNIT ur = new UNIT(u.v +  \"*\" + n.u.v);"+
+            "        UNIT ur = new UNIT(vu.v +  \"*\" + n.vu.v, vu.fact);"+
             "        if(nm == 0) return new NUMVAL((int)(tv*nv), ur);\n"+
             "        else return new NUMVAL(tv*nv,ur);\n"+
             "    }\n"+
@@ -132,7 +143,7 @@ public class Translator{
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
-            "        UNIT ur = new UNIT(u.v +  \"/\" + n.u.v);"+
+            "        UNIT ur = new UNIT(vu.v +  \"/\" + n.vu.v, vu.fact);"+
             "        if(nm == 0) return new NUMVAL((int)(tv/nv), ur);\n"+
             "        else return new NUMVAL(tv/nv, ur);\n"+
             "    }\n"+
@@ -140,38 +151,31 @@ public class Translator{
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        double mult = 1;\n"+
-            "        if(!vu.v.equals(n.vu.v)) { mult = findRate(vu.v, n.vu.v); }\n"+
+            "        if(!vu.v.equals(n.vu.v)) { mult = vu.fact.findRate(vu.v, n.vu.v); }\n"+
             "        return (tv<nv*mult);\n"+
             "    }\n"+
             "    public boolean VALGT(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        double mult = 1;\n"+
-            "        if(!vu.v.equals(n.vu.v)) { mult = findRate(vu.v, n.vu.v); }\n"+
+            "        if(!vu.v.equals(n.vu.v)) { mult = vu.fact.findRate(vu.v, n.vu.v); }\n"+
             "        return (tv>nv*mult);\n"+
             "    }\n"+
             "    public boolean VALEQ(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        double mult = 1;\n"+
-            "        if(!vu.v.equals(n.vu.v)) { mult = findRate(vu.v, n.vu.v); }\n"+
+            "        if(!vu.v.equals(n.vu.v)) { mult = vu.fact.findRate(vu.v, n.vu.v); }\n"+
             "        return (tv==nv*mult);\n"+
             "    }\n"+
             "    public boolean VALNEQ(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        double mult = 1;\n"+
-            "        if(!vu.v.equals(n.vu.v)) { mult = findRate(vu.v, n.vu.v); }\n"+
+            "        if(!vu.v.equals(n.vu.v)) { mult = vu.fact.findRate(vu.v, n.vu.v); }\n"+
             "        return (tv!=nv*mult);\n"+
             "    }\n"+
             "}";
 
-            public static final String UNIT_STRUCTURE =
-            "class UNIT{\n"+
-            "    public String v = \"\";\n"+
-            "    public UNIT(String u){ v = u; }\n"+
-            "    public String toString(){"+
-            "        return v.length()>0 ? \" \"+v : \"\"; }"+
-            "}";
     }
 }

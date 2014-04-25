@@ -47,7 +47,7 @@ public class Quantity implements Node{
 
         String literal = "factory.new NUMVAL("+
            (num_tr[2].equals(Number.INT_VAL) ? "new Integer(":"new Double(")+ 
-           num_tr[1]+"), factory.new UNIT(\""+unit_tr[1]+"\"))";
+           num_tr[1]+"), factory.new UNIT(\""+unit_tr[1]+"\",factory))";
 
         translation[0] = Translator.IN_PLACE;
         translation[1] = literal;

@@ -37,10 +37,10 @@ public class RateDeclaration implements Node {
         String[] translation = new String[2];
         translation[0] = Translator.IN_PLACE;
         translation[1] = "factory.registerRate("
-                         + unit1.translate()[1]
-                         + ","
+                         +"\""+ unit1.translate()[1]+"\""
+                         + ",\""
                          + unit2.translate()[1]
-                         + ","
+                         + "\","
                          + (new Double(number1.translate()[1]) / new Double(number2.translate()[1]))
                          + ")";
         return translation;
