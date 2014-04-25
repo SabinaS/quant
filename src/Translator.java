@@ -49,10 +49,10 @@ public class Translator{
                       "         rateName2 = new ArrayList<String>();\n" +
                       "         rateNum = new ArrayList<Double>();\n" +
                       "    }\n"+
-                      "    public void addRate(String u1, Double n1, String u2, Double n2) {\n"+
+                      "    public void addRate(String u1, String u2, Double rate) {\n"+
                       "        rateName1.add(u1);\n" +
                       "        rateName2.add(u2);\n" +
-                      "        rateNum.add(n1/n2);\n" +
+                      "        rateNum.add(rate);\n" +
                       "    }\n"+
                       "    public double findRate(String u1, String u2){\n"+
                       "        for(int i = 0; i < rateName1.size(); i++) {\n"+
