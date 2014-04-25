@@ -82,6 +82,7 @@ for		= (for)
 every 		= (every)
 has		= (has)
 having		= (having)
+with		= (with)
 
 whitespace	= [ \n\t]
 
@@ -116,6 +117,7 @@ identifier	= [A-Za-z]+
 {there}		{ return getSymbol(sym.THERE); }
 {has}		{ return getSymbol(sym.HAS); }
 {having}	{ return getSymbol(sym.HAVING); }
+{with}		{ return getSymbol(sym.WITH); }
 {not}		{ return getSymbol(sym.NOT); }
 {lparen}	{ return getSymbol(sym.LPAREN); }
 {rparen}	{ return getSymbol(sym.RPAREN); }

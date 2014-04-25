@@ -47,6 +47,7 @@ terminal HAS;
 terminal WITH;
 terminal HAVING; 
 
+terminal List LIST; //check 
 terminal String IDENTIFIER;
 terminal String STRING_LITERAL;
 terminal Integer INTEGER_LITERAL;
@@ -113,36 +114,59 @@ rate_dec	::= THERE IS number:num unit:unit IN number:num2 unit:unit2
 		    |
 		    THERE IS number:num unit:unit FOR EVERY number:num2 unit:unit2
 		    ;	
-type_dec	::= type_sig:type_sig colon mem_type_chain:mem_chain    
+type_dec	::= type_sig:type_sig COLON mem_type_chain:mem_chain    
 		    {: :}
 		    |
-		    type-sig
+		    type-sig:sig
+		    {: :}
 		    ;
 
-colon		::= COLON
+type_sig	::= type_ref:ref HAS ident_chain:ident_chain
+		    {: :}
+		    |
+		    type_ref:ref WITH ident_chain:ident_chain
+		    {: :}
+		    |
+		    type_ref:ref HAVING ident_chain:ident_chain
 		    {: :}
 		    ; 
 
-type_sig	::= type_ref HAS ident_chain: ident_chain
+mem_type_chain  ::= mem_type:mem_type AND mem_type:mem_type1
 		    {: :}
 		    |
-		    type_ref WITH ident_chain: ident_chain
+		    mem_type_chain:mem_type_chain CONNECTOR mem_type:mem
 		    {: :}
 		    |
-		    type_ref HAVING ident_chain: ident_chain
-		    ; 
+		    mem_type:mem
+		   {: :}
+		    ;
 
-mem_type_chain  ::=
+mem_type	::= IDENTIFIER:ident IS A type-ref: ref
+		    {: :}
+		    |
+		    IDENTFIER IS A A LIST //check inherits-from = is a
+		    {: :}
+		    |
+		    IDENTIFIER:ident IS expression:expr
 		    {: :}
 		    ;
 
 type_ref	::= A IDENTIFIER:ident
-		    {: :}
+		    {: RESULT = ident; :}
 		    |
 		    IDENTIFIER:ident
+		    {: RESULT = ident;:}
 		    ;
 
-ident_chain  	::= 
+ident_chain  	::= IDENTIFIER:ident
+		    {: RESULT = ident; :}
+		    |
+		    IDENTIFIER:ident1 AND IDENTIFIER:ident2
+		    {: :}
+		    |
+		    ident_chain:ident_chain CONNECTOR IDENTIFIER:ident
+		    {: :}
+		    ;
 
 statement	::= optv_statement:ostmt
 		    {: RESULT = new Statement(ostmt); :}
