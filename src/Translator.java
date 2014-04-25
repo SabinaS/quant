@@ -193,7 +193,7 @@ public class Translator{
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        double mult = 1;\n"+
-            "        if(!vu.v.equals(n.vu.v)) { mult = vu.fact.findRate(vu.v, n.vu.v); }\n"+
+            "        if(!vu.toString().equals(n.vu.toString())) { mult = vu.fact.findRate(vu.toString(), n.vu.toString()); }\n"+
             "        return (tv<nv*mult);\n"+
             "    }\n"+
             "    public boolean VALGT(NUMVAL n){\n"+
