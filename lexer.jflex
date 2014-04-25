@@ -59,6 +59,7 @@ colon		= (\:)
 period		= \.
 lparen		= \(
 rparen		= \)
+apo_s		=\'s
 
 a		= (a)
 is_a		= (is a )
@@ -121,6 +122,7 @@ identifier	= [A-Za-z]+
 {not}		{ return getSymbol(sym.NOT); }
 {lparen}	{ return getSymbol(sym.LPAREN); }
 {rparen}	{ return getSymbol(sym.RPAREN); }
+{apo_s}		{ return getSymbol(sym.APO_S); }
 {connector}	{ return getSymbol(sym.CONNECTOR); }
 {semicolon}	{ return getSymbol(sym.SEMICOLON); }
 {colon}		{ return getSymbol(sym.COLON); }

@@ -46,8 +46,8 @@ terminal EVERY;
 terminal HAS;
 terminal WITH;
 terminal HAVING; 
+terminal APO_S;
 
-terminal List LIST; //check 
 terminal String IDENTIFIER;
 terminal String STRING_LITERAL;
 terminal Integer INTEGER_LITERAL;
@@ -129,6 +129,15 @@ type_sig	::= type_ref:ref HAS ident_chain:ident_chain
 		    |
 		    type_ref:ref HAVING ident_chain:ident_chain
 		    {: :}
+		    |
+		    type_ref:ref IS A type_ref:ref2 HAS
+		    {: :}
+		    |
+		    type_ref:ref IS A type_ref:ref2 WITH
+		    {: :}
+		    |
+		    type_ref:ref IS A type_ref:ref2 HAVING
+		    {: :}
 		    ; 
 
 mem_type_chain  ::= mem_type:mem_type AND mem_type:mem_type1
@@ -138,13 +147,10 @@ mem_type_chain  ::= mem_type:mem_type AND mem_type:mem_type1
 		    {: :}
 		    |
 		    mem_type:mem
-		   {: :}
+		    {: :}
 		    ;
 
-mem_type	::= IDENTIFIER:ident IS A type-ref: ref
-		    {: :}
-		    |
-		    IDENTFIER IS A A LIST //check inherits-from = is a
+mem_type	::= IDENTIFIER:ident IS A type-ref:ref
 		    {: :}
 		    |
 		    IDENTIFIER:ident IS expression:expr
@@ -152,19 +158,22 @@ mem_type	::= IDENTIFIER:ident IS A type-ref: ref
 		    ;
 
 type_ref	::= A IDENTIFIER:ident
-		    {: RESULT = ident; :}
+		    {: :}
 		    |
 		    IDENTIFIER:ident
-		    {: RESULT = ident;:}
+		    {: :}
 		    ;
 
 ident_chain  	::= IDENTIFIER:ident
-		    {: RESULT = ident; :}
+		    {: :}
 		    |
 		    IDENTIFIER:ident1 AND IDENTIFIER:ident2
 		    {: :}
 		    |
-		    ident_chain:ident_chain CONNECTOR IDENTIFIER:ident
+		    ident_chain:ident CONNECTOR IDENTIFIER:ident
+		    {: :}
+		    |
+		    ident_chain:ident CONNECTOR IDENTIFIER:ident1 AND IDENTIFIER:ident2
 		    {: :}
 		    ;
 
@@ -330,6 +339,12 @@ asmt_statement	::= field:f IS expression:v
 		       RESULT = new AssignmentStatement(f,v,
 		                        Node.ASSMNT_MODE);
 		    :}	
+		    |
+		    field:f IS A type_ref:ref
+		    {: :}
+		    |
+		    field:f IS
+		    {: :}
 		    ;
 
 optv_statement	::= operative_kwd:kwd expression:e
@@ -406,7 +421,18 @@ field		::= IDENTIFIER:ident
 		               prevClass);
 		       RESULT = new Variable(ident, symrecord);
 		    :}
+		    |
+		    mem_ref:mem
+		    {: :}
+		    |
+		    collection_item_ref
+		    {: :}
 		    ;
+
+mem_ref		::= IDENTIFIER:ident APO_S IDENTIFIER:ident2
+		   {: :}
+		    ;
+
 
 line_terminator ::= PERIOD
 		    {: RESULT = new Terminator(Node.IMP_TERM); :}
