@@ -82,11 +82,51 @@ public class Translator{
            public static String getUnitStructure(String pname){
                 return 
                 "class UNIT{\n"+
-                "    public String v = \"\";\n"+
-                "    public "+pname+" fact;"+
-                "    public UNIT(String u,"+pname+" f){ v = u; fact = f;}\n"+
+                "    public ArrayList<String> numerator;\n"+
+                "    public ArrayList<String> denominator;\n"+
+                "    public "+pname+" fact;\n"+
+                "    public UNIT(String u,"+pname+" f){"+
+	        "        numerator = new ArrayList<String>();\n"+
+                "        denominator = new ArrayList<String>();\n"+
+                "        if(u!=null)  numerator.add(u);\n"+
+                "        fact = f;}\n"+
+                "    public UNIT mult(UNIT u){\n"+
+                "        UNIT nu = new UNIT(null,fact);\n"+
+                "        for(String s : numerator){ nu.numerator.add(s); }\n"+
+                "        for(String s : u.numerator){nu.numerator.add(s);}\n"+
+                "        for(String s :denominator){nu.denominator.add(s); "+
+                "            if(nu.numerator.contains(s)){"+
+                "               nu.numerator.remove(s);"+
+                "               nu.denominator.remove(s) }}\n"+
+                "        for(String s:u.denominator){nu.denominator.add(s); "+
+                "            if(nu.numerator.contains(s)){"+
+                "               nu.numerator.remove(s);"+
+                "               nu.denominator.remove(s) }}\n"+
+
+                "        return nu; }\n"+
+                "    public UNIT div(UNIT u){\n"+
+                "        UNIT nu = new UNIT(null,fact);\n"+
+                "        for(String s : numerator){ nu.numerator.add(s); }\n"+
+                "        for(String s : u.denominator){nu.numerator.add(s);}\n"+
+                "        for(String s :denominator){nu.denominator.add(s); "+
+                "            if(nu.numerator.contains(s)){"+
+                "               nu.numerator.remove(s);"+
+                "               nu.denominator.remove(s) }}\n"+
+                "        for(String s:u.numerator){nu.denominator.add(s); "+
+                "            if(nu.numerator.contains(s)){"+
+                "               nu.numerator.remove(s);"+
+                "               nu.denominator.remove(s) }}\n"+
+
+                "        return nu; }\n"+ 
                 "    public String toString(){"+
-                "        return v.length()>0 ? \" \"+v : \"\"; }"+
+                "        String strForm = \"(\";\n"+
+                "        for(String s:numerator) strForm=strForm+s+\"*\";"+
+                "        strForm = strForm.substring(0,strForm.length()-1) "+
+                "        \")/(\";\n"+
+                "        for(String s:denominator) strForm=strForm+s+\"*\";"+
+                "        strForm = strForm.substring(0,strForm.length()-1) "+
+                "        \")\";\n;"+
+                "        return strForm; }"+
                 "}";
             }
 
@@ -135,7 +175,8 @@ public class Translator{
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
-            "        UNIT ur = new UNIT(vu.v +  \"*\" + n.vu.v, vu.fact);"+
+            "        double rate = fact.findRate(vu,n.vu);\n"+
+            "        UNIT ur = rate == 1 ? vu.mult(n.vu) : vu.mult(vu);"+
             "        if(nm == 0) return new NUMVAL((int)(tv*nv), ur);\n"+
             "        else return new NUMVAL(tv*nv,ur);\n"+
             "    }\n"+
@@ -143,7 +184,8 @@ public class Translator{
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
-            "        UNIT ur = new UNIT(vu.v +  \"/\" + n.vu.v, vu.fact);"+
+            "        double rate = fact.findRate(vu,n.vu);\n"+
+            "        UNIT ur = rate == 1 ? vu.div(n.vu) : vu.div(vu);"+
             "        if(nm == 0) return new NUMVAL((int)(tv/nv), ur);\n"+
             "        else return new NUMVAL(tv/nv, ur);\n"+
             "    }\n"+
