@@ -34,14 +34,17 @@ terminal PRINT;
 terminal IS_A;
 terminal IS;
 terminal SET;
-terminal TO, THAN, NOT; 
+terminal TO, THAN, NOT;
 terminal IF, THEN, ELSE, WHILE;
 terminal LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
 terminal AND, OR;
-terminal THERE; 
+// terminal THERE_IS;
+// terminal THERE_ARE;
+terminal THERE;
+terminal ARE;
 terminal IN;
 terminal FOR;
-terminal EVERY; 
+terminal EVERY;
 
 terminal String IDENTIFIER;
 terminal String STRING_LITERAL;
@@ -77,7 +80,7 @@ non terminal Node while;
 non terminal Node bool_seq;
 non terminal Node bool_exp;
 non terminal conjunctive;
-non terminal rate_dec; 
+non terminal Node rate_dec;
 
 precedence left LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
 precedence left AND, OR;
@@ -100,10 +103,17 @@ line		::= statement:stmt line_terminator:lt
                     ;
 
 rate_dec	::= THERE IS number:num unit:unit IN number:num2 unit:unit2
-		    {: :} 
-		    |
-		    THERE IS number:num unit:unit FOR EVERY number:num2 unit:unit2
-		    ;	    
+						//* UNCOMMENT THE FOLLOWING, WAS JUST FOCUSING ON THE FIRST CASE */
+						// |
+						// THERE IS number:num unit:unit FOR EVERY number:num2 unit:unit2
+						// |
+						// THERE ARE number:num unit:unit IN number:num2 unit:unit2
+						// |
+						// THERE ARE number:num unit:unit FOR EVERY number:num2 unit:unit2
+						{: System.out.println("rate declaration found.");
+		    		 RESULT = new RateDeclaration(num, unit, num2, unit2); :}
+		    		;
+
 
 statement	::= optv_statement:ostmt
 		    {: RESULT = new Statement(ostmt); :}

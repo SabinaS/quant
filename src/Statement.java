@@ -8,11 +8,11 @@
  */
 
 public class Statement implements Node{
-    
-    /** 
+
+    /**
      * Specific statement (assignment or operative[e.g. 'Print'])
      * held by the generic statement.
-     */  
+     */
     private Node containedStatement;
 
     /**
@@ -38,7 +38,7 @@ public class Statement implements Node{
         Node[] children = { containedStatement };
         return children;
     }
-    
+
     public String[] translate(){
         // Simply return the translation of the wrapped statement.
         return containedStatement.translate();

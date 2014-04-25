@@ -21,7 +21,8 @@ public class Compiler {
         try {
             parser qParser = new parser (
                 new QuantLexer(new FileReader(args[0])));
-            ASTRoot = (Node) qParser.parse().value;
+            qParser.debug_parse();
+            // ASTRoot = (Node) qParser.parse().value;
         }
         catch (Exception e) {
             e.printStackTrace();

@@ -1,4 +1,4 @@
-public class RateDeclaration implements Node{
+public class RateDeclaration implements Node {
 
     private Node number1;
     private Node unit1;
