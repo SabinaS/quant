@@ -92,42 +92,48 @@ public class Translator{
                 "        fact = f;}\n"+
                 "    public UNIT mult(UNIT u){\n"+
                 "        UNIT nu = new UNIT(null,fact);\n"+
-                "        for(String s : numerator){ nu.numerator.add(s); }\n"+
-                "        for(String s : u.numerator){nu.numerator.add(s);}\n"+
-                "        for(String s :denominator){nu.denominator.add(s); "+
+                "        for(String s : numerator){ if(s.length() > 0) nu.numerator.add(s); }\n"+
+                "        for(String s : u.numerator){ if(s.length() > 0) nu.numerator.add(s);}\n"+
+                "        for(String s :denominator){ if(s.length() > 0){ nu.denominator.add(s); "+
                 "            if(nu.numerator.contains(s)){"+
                 "               nu.numerator.remove(s);"+
-                "               nu.denominator.remove(s); }}\n"+
-                "        for(String s:u.denominator){nu.denominator.add(s); "+
+                "               nu.denominator.remove(s); }}}\n"+
+                "        for(String s:u.denominator){ if(s.length() > 0){ nu.denominator.add(s); "+
                 "            if(nu.numerator.contains(s)){"+
                 "               nu.numerator.remove(s);"+
-                "               nu.denominator.remove(s); }}\n"+
+                "               nu.denominator.remove(s); }}}\n"+
 
                 "        return nu; }\n"+
                 "    public UNIT div(UNIT u){\n"+
                 "        UNIT nu = new UNIT(null,fact);\n"+
-                "        for(String s : numerator){ nu.numerator.add(s); }\n"+
-                "        for(String s : u.denominator){nu.numerator.add(s);}\n"+
-                "        for(String s :denominator){nu.denominator.add(s); "+
+                "        for(String s : numerator){ if(s.length() > 0) nu.numerator.add(s); }\n"+
+                "        for(String s : u.denominator){ if(s.length() > 0) nu.numerator.add(s);}\n"+
+                "        for(String s :denominator){ if(s.length() > 0){ nu.denominator.add(s); "+
                 "            if(nu.numerator.contains(s)){"+
                 "               nu.numerator.remove(s);"+
-                "               nu.denominator.remove(s); }}\n"+
-                "        for(String s:u.numerator){nu.denominator.add(s); "+
+                "               nu.denominator.remove(s); }}}\n"+
+                "        for(String s:u.numerator){ if(s.length() > 0){ nu.denominator.add(s); "+
                 "            if(nu.numerator.contains(s)){"+
                 "               nu.numerator.remove(s);"+
-                "               nu.denominator.remove(s); }}\n"+
+                "               nu.denominator.remove(s); }}}\n"+
 
                 "        return nu; }\n"+ 
                 "    public String toString(){"+
+                "        if(numerator.size()==0&&denominator.size()==0) "+
+                "            return \"\";\n"+
                 "        if(numerator.size()==1&&denominator.size()==0) "+
                 "            return numerator.get(0);\n"+
                 "        String strForm = \"(\";\n"+
                 "        for(String s:numerator) strForm=strForm+s+\"*\";"+
                 "        strForm = strForm.substring(0,strForm.length()-1) +"+
-                "        \")/(\";\n"+
-                "        for(String s:denominator) strForm=strForm+s+\"*\";"+
-                "        strForm = strForm.substring(0,strForm.length()-1)+ "+
-                "        \")\";\n;"+
+                "        \")\";"+
+                "        if(denominator.size()>0){\n"+
+                "            strForm += \"(\";\n"+
+                "            for(String s:denominator)\n"+
+                "                strForm += s+\"*\";\n"+
+                "            strForm = strForm.substring(0,strForm.length()-1)"+
+                "                + \")\";"+
+                "        }\n"+
                 "        return strForm; }"+
                 "}";
             }
@@ -183,8 +189,8 @@ public class Translator{
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
             "        double rate = vu.fact.findRate(vu.toString(),n.vu.toString());\n"+
             "        UNIT ur = rate == 1 ? vu.mult(n.vu) : vu.mult(vu);"+
-            "        if(nm == 0) return new NUMVAL((int)(tv*nv), ur);\n"+
-            "        else return new NUMVAL(tv*nv,ur);\n"+
+            "        if(nm == 0) return new NUMVAL((int)(tv*nv*rate), ur);\n"+
+            "        else return new NUMVAL(tv*nv*rate,ur);\n"+
             "    }\n"+
             "    public NUMVAL VALDIVIDE(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
@@ -192,8 +198,8 @@ public class Translator{
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
             "        double rate = vu.fact.findRate(vu.toString(),n.vu.toString());\n"+
             "        UNIT ur = rate == 1 ? vu.div(n.vu) : vu.div(vu);"+
-            "        if(nm == 0) return new NUMVAL((int)(tv/nv), ur);\n"+
-            "        else return new NUMVAL(tv/nv, ur);\n"+
+            "        if(nm == 0) return new NUMVAL((int)(tv/(nv*rate)), ur);\n"+
+            "        else return new NUMVAL(tv/(nv*rate), ur);\n"+
             "    }\n"+
             "    public boolean VALLT(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
