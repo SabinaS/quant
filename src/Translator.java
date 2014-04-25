@@ -153,7 +153,9 @@ public class Translator{
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        double mult = 1;\n"+
-            "        if(!vu.v.equals(n.vu.v)) { mult = vu.fact.findRate(vu.v, n.vu.v); }\n"+
+            "        if(!vu.toString().equals(n.vu.toString())) {\n"+
+    	    "        mult = vu.fact.findRate(vu.toString(), n.vu.toString());\n"+
+    	    "        }\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
             "        double nr = tv+nv*mult;\n"+
             "        UNIT ur = vu;\n"+
@@ -164,14 +166,16 @@ public class Translator{
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        double mult = 1;\n"+
-            "        if(!vu.v.equals(n.vu.v)) { mult = vu.fact.findRate(vu.v, n.vu.v); }\n"+
+            "        if(!vu.toString().equals(n.vu.toString())) {\n"+
+    	    "        mult = vu.fact.findRate(vu.toString(), n.vu.toString());\n"+
+    	    "        }\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
             "        double nr = tv-nv*mult;\n"+
             "        UNIT ur = vu;\n"+
             "        if(nm == 0) return new NUMVAL((int) nr, ur);\n"+
             "        else return new NUMVAL(nr,ur);\n"+
             "    }\n"+
-            "    public NUMVAL VALTIMES(NUMVAL n){\n"+ //add squared functionality??
+            "    public NUMVAL VALTIMES(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
@@ -200,21 +204,27 @@ public class Translator{
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        double mult = 1;\n"+
-            "        if(!vu.v.equals(n.vu.v)) { mult = vu.fact.findRate(vu.v, n.vu.v); }\n"+
+            "        if(!vu.toString().equals(n.vu.toString())) {\n"+
+            "        mult = vu.fact.findRate(vu.toString(), n.vu.toString());\n"+
+            "        }\n"+
             "        return (tv>nv*mult);\n"+
             "    }\n"+
             "    public boolean VALEQ(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        double mult = 1;\n"+
-            "        if(!vu.v.equals(n.vu.v)) { mult = vu.fact.findRate(vu.v, n.vu.v); }\n"+
+            "        if(!vu.toString().equals(n.vu.toString())) {\n"+
+    	    "        mult = vu.fact.findRate(vu.toSring(), n.vu.toString());\n"+
+    	    "        }\n"+
             "        return (tv==nv*mult);\n"+
             "    }\n"+
             "    public boolean VALNEQ(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        double mult = 1;\n"+
-            "        if(!vu.v.equals(n.vu.v)) { mult = vu.fact.findRate(vu.v, n.vu.v); }\n"+
+            "        if(!vu.toString().equals(n.vu.toString())) {\n"+
+    	    "        mult = vu.fact.findRate(vu.toString(), n.vu.toString());\n"+
+    	    "        }\n"+
             "        return (tv!=nv*mult);\n"+
             "    }\n"+
             "}";
