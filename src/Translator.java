@@ -51,8 +51,8 @@ public class Translator{
                       "         rateNum = new ArrayList<Double>();\n" +
                       "    }\n"+
                       "    public void registerRate(String u1, String u2, Double rate) {\n"+
-                      "        rateName1.add(u1);\n" +
-                      "        rateName2.add(u2);\n" +
+                      "        rateName1.add(new UNIT(u1,this).toString());\n" +
+                      "        rateName2.add(new UNIT(u2,this).toString());\n" +
                       "        rateNum.add(rate);\n" +
                       "    }\n"+
                       "    public double findRate(String u1, String u2){\n"+
@@ -97,11 +97,11 @@ public class Translator{
                 "        for(String s :denominator){nu.denominator.add(s); "+
                 "            if(nu.numerator.contains(s)){"+
                 "               nu.numerator.remove(s);"+
-                "               nu.denominator.remove(s) }}\n"+
+                "               nu.denominator.remove(s); }}\n"+
                 "        for(String s:u.denominator){nu.denominator.add(s); "+
                 "            if(nu.numerator.contains(s)){"+
                 "               nu.numerator.remove(s);"+
-                "               nu.denominator.remove(s) }}\n"+
+                "               nu.denominator.remove(s); }}\n"+
 
                 "        return nu; }\n"+
                 "    public UNIT div(UNIT u){\n"+
@@ -111,20 +111,22 @@ public class Translator{
                 "        for(String s :denominator){nu.denominator.add(s); "+
                 "            if(nu.numerator.contains(s)){"+
                 "               nu.numerator.remove(s);"+
-                "               nu.denominator.remove(s) }}\n"+
+                "               nu.denominator.remove(s); }}\n"+
                 "        for(String s:u.numerator){nu.denominator.add(s); "+
                 "            if(nu.numerator.contains(s)){"+
                 "               nu.numerator.remove(s);"+
-                "               nu.denominator.remove(s) }}\n"+
+                "               nu.denominator.remove(s); }}\n"+
 
                 "        return nu; }\n"+ 
                 "    public String toString(){"+
+                "        if(numerator.size()==1&&denominator.size()==0) "+
+                "            return numerator.get(0);\n"+
                 "        String strForm = \"(\";\n"+
                 "        for(String s:numerator) strForm=strForm+s+\"*\";"+
-                "        strForm = strForm.substring(0,strForm.length()-1) "+
+                "        strForm = strForm.substring(0,strForm.length()-1) +"+
                 "        \")/(\";\n"+
                 "        for(String s:denominator) strForm=strForm+s+\"*\";"+
-                "        strForm = strForm.substring(0,strForm.length()-1) "+
+                "        strForm = strForm.substring(0,strForm.length()-1)+ "+
                 "        \")\";\n;"+
                 "        return strForm; }"+
                 "}";
@@ -148,16 +150,16 @@ public class Translator{
             "    public NUMVAL(double v, UNIT u){ vr = v; m = 1; vu = u;}\n"+
             "    public String toString(){"+
             "        return (m == 0 ? \"\"+vi : \"\"+vr)" +
-            "        +vu.toString(); }\n"+
+            "        +\" \"+vu.toString(); }\n"+
             "    public NUMVAL VALPLUS(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        double mult = 1;\n"+
             "        if(!vu.toString().equals(n.vu.toString())) {\n"+
     	    "        mult = vu.fact.findRate(vu.toString(), n.vu.toString());\n"+
-    	    "        }\n"+
+    	    "        }\n;"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
-            "        double nr = tv+nv*mult;\n"+
+            "        double nr = tv+nv*mult;\n; "+
             "        UNIT ur = vu;\n"+
             "        if(nm == 0) return new NUMVAL((int) nr,ur);\n"+
             "        else return new NUMVAL(nr, ur);\n"+
@@ -179,7 +181,7 @@ public class Translator{
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
-            "        double rate = fact.findRate(vu,n.vu);\n"+
+            "        double rate = vu.fact.findRate(vu.toString(),n.vu.toString());\n"+
             "        UNIT ur = rate == 1 ? vu.mult(n.vu) : vu.mult(vu);"+
             "        if(nm == 0) return new NUMVAL((int)(tv*nv), ur);\n"+
             "        else return new NUMVAL(tv*nv,ur);\n"+
@@ -188,7 +190,7 @@ public class Translator{
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
-            "        double rate = fact.findRate(vu,n.vu);\n"+
+            "        double rate = vu.fact.findRate(vu.toString(),n.vu.toString());\n"+
             "        UNIT ur = rate == 1 ? vu.div(n.vu) : vu.div(vu);"+
             "        if(nm == 0) return new NUMVAL((int)(tv/nv), ur);\n"+
             "        else return new NUMVAL(tv/nv, ur);\n"+
@@ -214,7 +216,7 @@ public class Translator{
             "        double nv = n.vi + n.vr;\n"+
             "        double mult = 1;\n"+
             "        if(!vu.toString().equals(n.vu.toString())) {\n"+
-    	    "        mult = vu.fact.findRate(vu.toSring(), n.vu.toString());\n"+
+    	    "        mult = vu.fact.findRate(vu.toString(), n.vu.toString());\n"+
     	    "        }\n"+
             "        return (tv==nv*mult);\n"+
             "    }\n"+
