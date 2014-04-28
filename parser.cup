@@ -87,7 +87,7 @@ non terminal type_dec;
 non terminal colon; 
 non terminal type_sig; 
 non terminal mem_type_chain; 
-non terminal ident_chain; 
+non terminal ident_chain;   
 
 precedence left LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
 precedence left AND, OR;
@@ -347,6 +347,8 @@ asmt_statement	::= field:f IS expression:v
 		    {: :}
 		    ;
 
+
+
 optv_statement	::= operative_kwd:kwd expression:e
 		    {: RESULT = new OperativeStatement(kwd, e); :}
 		    ;
@@ -354,6 +356,7 @@ optv_statement	::= operative_kwd:kwd expression:e
 operative_kwd	::= PRINT
 		    {: RESULT = new OperativeKeyword(Node.SEM_PRINT_KWD); :}
 		    ;
+
 
 expression	::= expression:l PLUS expression:r
 		    {: RESULT = new Expression(l,r, Node.SEM_PLUS); :}
