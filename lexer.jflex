@@ -49,7 +49,7 @@ rat_num		= ( [\-])?[0-9]+\.[0-9]+
 plus		= (\+|Plus|plus)
 minus		= (\-|Minus|minus)
 times		= (\*|Times|times)
-divide		= (\\|divided by|over)
+divide		= (\/|divided by|over)
 and		= (\&\&|and)
 or		= (\|\||or)
 
