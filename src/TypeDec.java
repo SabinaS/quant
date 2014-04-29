@@ -47,10 +47,34 @@ public class TypeDec implements Node{
     }
 
     public String[] translate(){
-        String[] translation = new String[2];
-        translation[0] = Translator.IN_PLACE;
-        translation[1] = typeSig.translate()[1] + 
-        	typeMems.translate()[1] + ")";
+        // want typeSig to return a translation that looks like
+        // { "type name", "field1", "field2", "field3" }
+        String[] tSigTrans = typeSig.translate();
+        String javaClass = "class "+tSigTrans[0]+"{\n";
+        
+        // if no member type chain...
+        if(typeMems == null){
+            for(int i = 1; i < tSigTrans.length; i++){
+                javaClass += "    public NUMVAL "+tSigTrans[i]+";";
+                javaClass += "    public String "+tSigTrans[i]+"_str;";
+            }
+        }
+        // if there is a member chain...
+        else{
+            // { "field", "value/type" . . . . }
+            String[] typeTrans = typeMems.translate();
+            // go through all the fields
+            for(int i = 1; i < tSigTrans.length; i++){
+                // look for the field in the member type chain
+                for(int j = 0; j < typeTrans.length; j+=2){
+                    if(typeTrans[j].equals(tSigTrans[i])){
+                        if(symrecord.getClass(tSigTrans[i+1]) == SymbolRecord.TYPE_CLASS){
+                            javaClass += "    public "+tSigTrans[i+1]+" "+
+                    }
+                }
+            } 
+        }
+     
         return translation;
     }
 

@@ -17,6 +17,8 @@ public class SymbolRecord{
     public static int UNIT_CLASS = 1;
     /** Encoding for an identifier declared as a variable. */
     public static int VARIABLE_CLASS = 2;
+    /** Encoding for an identifier declared as an object type. */
+    public static int TYPE_CLASS = 3;
 
     /** Encoding for a string variable. */
     public static String STRING_TYPE = "String";
@@ -49,6 +51,10 @@ public class SymbolRecord{
             classRecord.put(key,c);
             return 0;
         }
+    }
+
+    public int getClass(String key){
+        return classRecord.get(key);
     }
 
     /**

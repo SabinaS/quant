@@ -14,6 +14,9 @@ public class Translator{
     /** Translation directive for placement after a sibling. */
     public static final String AFTER_SIBLING = "AFTER SIBLING";
 
+    /** Translation directive for placement of a translation as a nested class. */
+    public static final String NEST_CLASS = "NESTED CLASS";
+
     /** Root-level translation directive for placement into main(). */
     public static final String IN_MAIN = "IN MAIN";
 
