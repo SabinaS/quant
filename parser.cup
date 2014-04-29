@@ -29,20 +29,23 @@ parser code {:
 /*
  * Symbol definitions`
  */
-
 terminal PRINT;
-terminal A;
-terminal IS;
+terminal A; 
+terminal IS_A;
+terminal IS, ARE;
 terminal SET;
-terminal TO, THAN, NOT;
+terminal TO, THAN, NOT; 
 terminal IF, THEN, ELSE, WHILE;
 terminal LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
 terminal AND, OR;
-terminal THERE;
-terminal ARE;
+terminal THERE; 
 terminal IN;
 terminal FOR;
-terminal EVERY;
+terminal EVERY; 
+terminal HAS;
+terminal WITH;
+terminal HAVING; 
+terminal APO_S;
 
 terminal String IDENTIFIER;
 terminal String STRING_LITERAL;
@@ -78,7 +81,15 @@ non terminal Node while;
 non terminal Node bool_seq;
 non terminal Node bool_exp;
 non terminal conjunctive;
-non terminal Node rate_dec;
+non terminal Node rate_dec; 
+non terminal Node type_dec; 
+non terminal Node colon; 
+non terminal Node type_sig;
+non terminal Node type_ref; 
+non terminal Node mem_type_chain;
+non terminal Node mem_type;
+non terminal Node mem_ref; 
+non terminal Node ident_chain;   
 
 precedence left LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
 precedence left AND, OR;
@@ -114,6 +125,69 @@ rate_dec	::= THERE IS number:n unit:u IN number:n2 unit:u2
 		    |
 		    THERE ARE number:n unit:u FOR EVERY number:n2 unit:u2
 		    {: RESULT = new RateDeclaration(n,u,n2,u2); :}
+		    ;
+
+type_dec	::= type_sig:sig COLON mem_type_chain:mem_chain    
+		    {: :}
+		    |
+		    type_sig:sig
+		    {: :}
+		    ;
+
+type_sig	::= type_ref:ref HAS ident_chain:ident_chain
+		    {: :}
+		    |
+		    type_ref:ref WITH ident_chain:ident_chain
+		    {: :}
+		    |
+		    type_ref:ref HAVING ident_chain:ident_chain
+		    {: :}
+		    |
+		    type_ref:ref IS A type_ref:ref2 HAS
+		    {: :}
+		    |
+		    type_ref:ref IS A type_ref:ref2 WITH
+		    {: :}
+		    |
+		    type_ref:ref IS A type_ref:ref2 HAVING
+		    {: :}
+		    ; 
+
+mem_type_chain  ::= mem_type_chain:mem_type AND mem_type:mem_type1
+		    {: :}
+		    |
+		    mem_type_chain:mem_type_chain CONNECTOR mem_type:mem
+		    {: :}
+		    |
+		    mem_type:mem
+		    {: :}
+		    ;
+
+mem_type	::= IDENTIFIER:ident1 IS A type_ref:ref
+		    {: :}
+		    |
+		    IDENTIFIER:ident2 IS expression:expr
+		    {: :}
+		    ;
+
+type_ref	::= A IDENTIFIER:ident1
+		    {: :}
+		    |
+		    IDENTIFIER:ident2
+		    {: :}
+		    ;
+
+ident_chain  	::= IDENTIFIER:ident1
+		    {: :}
+		    |
+		    ident_chain:ident2 AND IDENTIFIER:ident3
+		    {: :}
+		    |
+		    ident_chain:ident4 CONNECTOR IDENTIFIER:ident5
+		    {: :}
+		    |
+		    ident_chain:ident6 CONNECTOR AND IDENTIFIER:ident7
+		    {: :}
 		    ;
 
 
@@ -278,7 +352,10 @@ asmt_statement	::= field:f IS expression:v
 		           ((Variable) f).setType(SymbolRecord.QUANTITY_TYPE);
 		       RESULT = new AssignmentStatement(f,v,
 		                        Node.ASSMNT_MODE);
-		    :}	
+		    :}
+                    |
+                    field:f IS A type_ref:ref
+		    {: :}	
 		    ;
 
 optv_statement	::= operative_kwd:kwd expression:e
@@ -355,6 +432,13 @@ field		::= IDENTIFIER:ident
 		               prevClass);
 		       RESULT = new Variable(ident, symrecord);
 		    :}
+		    |
+                    mem_ref:mem
+		    {: :}
+		    ;
+
+mem_ref		::= IDENTIFIER:ident1 APO_S IDENTIFIER:ident2
+		    {: :}
 		    ;
 
 line_terminator ::= PERIOD
