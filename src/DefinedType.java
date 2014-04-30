@@ -33,6 +33,18 @@ public class DefinedType{
         }
     }
 
+    public boolean inheritsFrom(String sType){
+        String c = superType;
+        System.out.println(sType+" against: "+c);
+        if(c == null) return false;
+        if(c != null && !c.equals("")){
+            if(c.equals(sType)) return true;
+            DefinedType t = symrecord.getTypeObj(c);
+            if(t != null) return t.inheritsFrom(sType);
+        }
+        return false;
+    }
+
     /** Add a field to a defined type. */
     public void addField(String field, String type, String val){
         if(fields.contains(field)){

@@ -22,6 +22,15 @@ action code {:
         System.out.println("Wait a second!  What's a '"+identifier+"'?");
         System.exit(0);
     }
+    public void typeMismatch(String type, String field, String expected, String found){
+        if(expected.equals("String")){ expected = "string"; }
+        if(expected.equals("NUMVAL")){ expected = "quantity"; }
+        if(found.equals("String")){ found = "string"; }
+        if(found.equals("NUMVAL")){ found = "quantity"; }
+        System.out.println("Hold on a minute!  You're using a "+type+"'s "+field+" as a "+
+                           found+", but you said before that it was a "+expected+"!");
+        System.exit(0);
+    }
     public void typeMembError(String ident, String memb){
         System.out.println("Woops!  "+ident+" doesn't have a '"+memb+"'!");
         System.exit(0);
@@ -424,6 +433,26 @@ asmt_statement	::= field:f IS expression:v
 		           ((Variable) f).setType(SymbolRecord.STRING_TYPE);
 		       else
 		           ((Variable) f).setType(SymbolRecord.QUANTITY_TYPE);
+                       String left, right;
+                       Variable var = (Variable) f;
+                       String assType = v.getSemanticRepresentation().equals("STRING") ? "String" : 
+                           "NUMVAL";
+                       if(var.name.indexOf('.')>=0){
+                           left = var.name.substring(0, var.name.indexOf('.'));
+                           right = var.name.substring(var.name.indexOf('.')+1);
+                           while(right.indexOf('.') > 0){
+                               left = right.substring(0,right.indexOf('.'));
+                               right = right.substring(right.indexOf('.')+1);
+                           }
+                           // Infer type
+                           String type = symrecord.getType(left);
+                           DefinedType typeObj = symrecord.getTypeObj(type);
+                           if(typeObj!=null&&symrecord.getType(type+"."+right).equals("Object")){ 
+                               typeObj.setType(right, assType); 
+                           } else if(!symrecord.getType(type+"."+right).equals(assType)){
+                               typeMismatch(type, right, symrecord.getType(type+"."+right), assType);
+                           }
+                       }
 		       RESULT = new AssignmentStatement(f,v,
 		                        Node.ASSMNT_MODE);
 		    :}
@@ -433,6 +462,26 @@ asmt_statement	::= field:f IS expression:v
 		           ((Variable) f).setType(SymbolRecord.STRING_TYPE);
 		       else
 		           ((Variable) f).setType(SymbolRecord.QUANTITY_TYPE);
+                       String left, right;
+                       Variable var = (Variable) f;
+                       String assType = v.getSemanticRepresentation().equals("STRING") ? "String" : 
+                           "NUMVAL";
+                       if(var.name.indexOf('.')>=0){
+                           left = var.name.substring(0, var.name.indexOf('.'));
+                           right = var.name.substring(var.name.indexOf('.')+1);
+                           while(right.indexOf('.') > 0){
+                               left = right.substring(0,right.indexOf('.'));
+                               right = right.substring(right.indexOf('.')+1);
+                           }
+                           // Infer type
+                           String type = symrecord.getType(left);
+                           DefinedType typeObj = symrecord.getTypeObj(type);
+                           if(typeObj!=null&&symrecord.getType(type+"."+right).equals("Object")){ 
+                               typeObj.setType(right, assType); 
+                           } else if(!symrecord.getType(type+"."+right).equals(assType)){
+                               typeMismatch(type, right, symrecord.getType(type+"."+right), assType);
+                           }
+                       }
 
 		       RESULT = new AssignmentStatement(f,v,
 		                        Node.ASSMNT_MODE);
@@ -443,7 +492,31 @@ asmt_statement	::= field:f IS expression:v
                         String type = ((TypeRef) ref).getType();
                         if(!symrecord.typeIsDefined(type))
                             typeDefError(type,"",10);
-               
+                        Variable var = (Variable) f;
+                        String left, right;
+                        String assType = type;
+                        if(var.name.indexOf('.')>=0){
+                           left = var.name.substring(0, var.name.indexOf('.'));
+                           right = var.name.substring(var.name.indexOf('.')+1);
+                           while(right.indexOf('.') > 0){
+                               left = right.substring(0,right.indexOf('.'));
+                               right = right.substring(right.indexOf('.')+1);
+                           }
+                           // Infer type
+                           String rtype = symrecord.getType(left);
+                           DefinedType typeObj = symrecord.getTypeObj(rtype);
+                           DefinedType membType = 
+                               symrecord.getTypeObj(symrecord.getType(rtype+"."+right));
+                           DefinedType atO = symrecord.getTypeObj(assType);
+                           if(typeObj!=null&&symrecord.getType(rtype+"."+right).equals("Object")){ 
+                               typeObj.setType(right, assType); 
+                           } else if(!symrecord.getType(rtype+"."+right).equals(assType) &&
+                                   !atO.inheritsFrom(symrecord.getType(rtype+"."+right))){
+                               typeMismatch(rtype, right, symrecord.getType(rtype+"."+right), assType);
+                           } else{ typeObj.setType(right, assType); }
+
+                        }
+   
                         ((Variable) f).setType(type);
                         RESULT = new AssignmentStatement(f,ref,
                                         Node.ASSMNT_MODE); 

@@ -10,9 +10,11 @@ public class Variable implements Node{
      *  used to determine declarations in translation.
      */
     private SymbolRecord symrecord;
-    private String name;
+    String name;
     String initChain;
- 
+
+    int ignoreDecl = 0;
+    String oType;
     /**
      * Constructs a variable node.
      * @param n name of variable
@@ -31,6 +33,7 @@ public class Variable implements Node{
      */
     public void setType(String t){
         symrecord.setType(name, t);
+        
     }
 
     // Leaf -- node will have no children.
@@ -45,7 +48,7 @@ public class Variable implements Node{
         String[] translation = new String[2];
         translation[0] = Translator.IN_PLACE;
         
-	String literal = ( symrecord.isDeclared(name) ? "" : 
+	String literal = ( ignoreDecl==1 || symrecord.isDeclared(name) ? "" : 
                            symrecord.getType(name) ) + " "+name;
         symrecord.setDeclared(name,1);
         translation[1] = literal;
