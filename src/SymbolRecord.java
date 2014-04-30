@@ -20,6 +20,8 @@ public class SymbolRecord{
     public static int VARIABLE_CLASS = 2;
     /** Encoding for an identifier declared as an object type. */
     public static int TYPE_CLASS = 3;
+    /** Encoding for a user-defined class. */
+    public static int UDEF_CLASS = 4;
 
     /** Encoding for an unknown type. */
     public static String UNKNOWN_TYPE = "!TUNKNOWN";
@@ -35,7 +37,7 @@ public class SymbolRecord{
     private HashMap<String, String> typeRecord;
     private HashMap<String, Integer> declarationRecord;
 
-    private ArrayList<DefinedType> objTypes;
+    public ArrayList<DefinedType> objTypes;
     private HashMap<String,DefinedType> typeMap;
 
     public SymbolRecord(){
@@ -101,7 +103,7 @@ public class SymbolRecord{
         DefinedType type = typeMap.get(typeName);
         if(type==null) return;
         for(int i = 0; i < fields.size(); i++){
-            type.addField(fields.get(i), null, "");
+            type.addField(fields.get(i), "Object", "");
         }
     }
 

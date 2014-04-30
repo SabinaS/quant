@@ -86,6 +86,8 @@ has		     = (has)
 with		     = (with)
 having		     = (having)
 
+comment		   = \([^\(\)]*\)
+
 whitespace	   = [ \n\t]
 
 identifier	   = [A-Za-z]+
@@ -134,6 +136,7 @@ identifier	   = [A-Za-z]+
 {every}		    { return getSymbol(sym.EVERY); }
 {period}	    { return getSymbol(sym.PERIOD); }
 {whitespace}  { /* Ignore. */ }
+{comment}	{ /* Ignore */ }
 {identifier}	{ // Will need to add symbol table management.
 		  return getSymbol(sym.IDENTIFIER, yytext());
 		}

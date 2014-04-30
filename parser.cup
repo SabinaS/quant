@@ -113,7 +113,10 @@ line_block	::= line_block:lb line:ln
 		    {: lb.addChild(ln); RESULT = lb; :}
 		    |
 		    line:ln
-		    {: RESULT = new LineBlock(ln); :}
+		    {: LineBlock lb = new LineBlock(ln); 
+                       lb.symrecord = symrecord;
+                       RESULT = lb;
+                    :}
 		    ;
 
 line		::= statement:stmt line_terminator:lt
@@ -217,10 +220,10 @@ mem_type_chain  ::= mem_type_chain:mem_type AND mem_type:mem_type1
 mem_type	::= IDENTIFIER:ident1 IS type_ref:ref
 		    {:
                         String type = ((TypeRef) ref).getType();
-                        if(symrecord.typeIsDefined(type)){
+                        if(!symrecord.typeIsDefined(type)){
                             typeDefError(ident1,null,10);
                         }
-                        RESULT = new MemberType(ident1, type, "new "+type+"()", symrecord);
+                        RESULT = new MemberType(ident1, type, "" , symrecord);
                     :}
 		    |
 		    IDENTIFIER:ident2 IS expression:expr
@@ -229,12 +232,13 @@ mem_type	::= IDENTIFIER:ident1 IS type_ref:ref
                             RESULT = new MemberType(ident2,"String", expr.translate()[1], symrecord);
                         } else{
                             String trans = expr.translate()[1];
-                            trans = trans.replace("factory.","");
                             if(expr.getSemanticRepresentation().equals(""))
-                            	RESULT = new MemberType(ident2,"NUMVAL",trans+".clone()",symrecord);
-                            else
+                            	RESULT = new MemberType(ident2,"NUMVAL",trans,symrecord);
+                            else{
+                                String t = expr.getSemanticRepresentation();
                                 RESULT = new MemberType(ident2,expr.getSemanticRepresentation(),
-                                              trans+".clone()",symrecord); 
+                                                trans,symrecord);
+                            }
                         } 
                     :}
 		    ;

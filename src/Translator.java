@@ -6,6 +6,8 @@
  * @author Aubrey
  */
 
+import java.util.ArrayList;
+
 public class Translator{
 
     /** Translation directive for default placement. */
@@ -34,6 +36,29 @@ public class Translator{
         AST = a;
     }
 
+    public String translateTypes(ArrayList<DefinedType> types, String pname){
+        String tr = "";
+        for(int i = 0; i < types.size(); i++){
+            DefinedType type = types.get(i);
+            String typeBlock = "class "+type.typeName+"{\n"+
+                                "\t"+pname+" factory;\n"+
+                                "\tpublic "+type.typeName+"("+pname+" f){\n\tfactory = f;\n";
+            for(int j = 0; j < type.fields.size(); j++){
+                if(type.fieldValues.get(j).length() > 0){
+                    typeBlock+="\t"+type.fields.get(j)+" = "+type.fieldValues.get(j)+";\n";
+                }
+            } 
+            typeBlock+= "}\n";
+            for(int j = 0; j < type.fields.size(); j++){
+                typeBlock+="\tpublic "+type.fieldTypes.get(j)+" "+
+                               type.fields.get(j) +";\n";
+            }
+            typeBlock +="}\n";
+            tr += typeBlock;
+        }
+        return tr;
+    }
+
     /**
      * Returns a full translation for the
      * AST.
@@ -42,6 +67,8 @@ public class Translator{
      */
     public String getJava(String programName){
         String[] components = AST.translate();
+        ArrayList<DefinedType> userTypes = ((LineBlock) AST).symrecord.objTypes;
+        String typesBlock = translateTypes(userTypes,programName);
         StaticCode sc = new StaticCode();
         String java = "import java.util.ArrayList;"+
 		      "public class "+programName+"{\n"+
@@ -79,6 +106,7 @@ public class Translator{
                           "}\n"+
                           StaticCode.VALUE_STRUCTURE+"\n"+
                           getUnitStructure(programName)+"\n"+
+                          typesBlock+"\n"+
                       "}";
         return java;
     }

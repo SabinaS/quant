@@ -14,6 +14,7 @@ public class LineBlock implements Node{
      * translation.
      */
     private Queue<Node> lines;
+    SymbolRecord symrecord;
 
     /**
      * A LineBlock must be constructed with an
