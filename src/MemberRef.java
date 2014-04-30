@@ -1,11 +1,20 @@
 public class MemberRef implements Node{
 
-    private Node object;
-    private Node member;
+    Node objIdent;
+    String member;
+    String type;
+    String initChain;    
 
-    public MemberRef(Node o, Node m){
-        object = o;
+    boolean isDefined = true;
+
+    public MemberRef(Node o, String m, String t){
+        objIdent = o;
         member = m;
+        type = t;
+    }
+
+    public String getName(){
+        return ((Variable) objIdent).getName()+"."+member;
     }
 
     public void addChild(Node o){
@@ -13,12 +22,15 @@ public class MemberRef implements Node{
     }
 
     public Node[] getChildren(){
-        Node[] children = {object, member};
+        Node[] children = {objIdent};
         return children;
     }
 
     public String[] translate(){
-        String[] translation = {""};
+        String[] translation;
+            translation = new String[2];
+            translation[0] = Translator.IN_PLACE;
+            translation[1] = ((Variable) objIdent).getName()+"."+member;
         return translation;
     }
 

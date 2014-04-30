@@ -11,7 +11,8 @@ public class Variable implements Node{
      */
     private SymbolRecord symrecord;
     private String name;
-
+    String initChain;
+ 
     /**
      * Constructs a variable node.
      * @param n name of variable

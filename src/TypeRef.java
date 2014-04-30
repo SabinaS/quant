@@ -20,7 +20,9 @@ public class TypeRef implements Node{
     public String getType(){ return identifier; }
 
     public String[] translate(){
-        String[] translation = {""};
+        String[] translation = new String[2];
+        translation[0] = Translator.IN_PLACE;
+        translation[1] = "factory.new "+identifier+"(factory)";
         return translation;
     }
 

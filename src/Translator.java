@@ -10,6 +10,9 @@ import java.util.ArrayList;
 
 public class Translator{
 
+
+    public static final String BEFORE_LINE = "BEFORE";
+
     /** Translation directive for default placement. */
     public static final String IN_PLACE = "IN PLACE";
 

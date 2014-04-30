@@ -22,6 +22,10 @@ action code {:
         System.out.println("Wait a second!  What's a '"+identifier+"'?");
         System.exit(0);
     }
+    public void typeMembError(String ident, String memb){
+        System.out.println("Woops!  "+ident+" doesn't have a '"+memb+"'!");
+        System.exit(0);
+    }
     public void typeDefError(String type, String stype, int err){
         if(err == SymbolRecord.TYPE_DEFINED)
             System.out.println("Woops!  You've said what a '"+type+"' is twice!");
@@ -429,12 +433,21 @@ asmt_statement	::= field:f IS expression:v
 		           ((Variable) f).setType(SymbolRecord.STRING_TYPE);
 		       else
 		           ((Variable) f).setType(SymbolRecord.QUANTITY_TYPE);
+
 		       RESULT = new AssignmentStatement(f,v,
 		                        Node.ASSMNT_MODE);
 		    :}
                     |
-                    field:f IS A type_ref:ref
-		    {: :}	
+                    field:f IS type_ref:ref
+		    {:
+                        String type = ((TypeRef) ref).getType();
+                        if(!symrecord.typeIsDefined(type))
+                            typeDefError(type,"",10);
+               
+                        ((Variable) f).setType(type);
+                        RESULT = new AssignmentStatement(f,ref,
+                                        Node.ASSMNT_MODE); 
+                    :}	
 		    ;
 
 optv_statement	::= operative_kwd:kwd expression:e
@@ -513,11 +526,24 @@ field		::= IDENTIFIER:ident
 		    :}
 		    |
                     mem_ref:mem
-		    {: :}
+		    {:
+                       Variable v = new Variable( ((MemberRef) mem).getName(), symrecord );
+                       v.ignoreDecl = 1;
+                       RESULT = v;
+                    :}
 		    ;
 
-mem_ref		::= IDENTIFIER:ident1 APO_S IDENTIFIER:ident2
-		    {: :}
+mem_ref		::= field:ident1 APO_S IDENTIFIER:ident2
+		    {:
+                        String type = symrecord.getType(((Variable) ident1).getName());
+                        String mType = "";
+                        DefinedType typeObj = symrecord.getTypeObj(type);
+                        if(typeObj==null||!typeObj.fields.contains(ident2))
+                            typeMembError(((Variable) ident1).getName(), ident2);
+                        mType = typeObj.fieldTypes.get(typeObj.fields.indexOf(ident2));
+                        symrecord.setType(((Variable) ident1).getName()+"."+ident2, mType);
+                        RESULT = new MemberRef(ident1, ident2, mType);
+                    :}
 		    ;
 
 line_terminator ::= PERIOD

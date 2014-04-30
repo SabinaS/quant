@@ -85,7 +85,7 @@ every 		     = (every)
 has		     = (has)
 with		     = (with)
 having		     = (having)
-
+apo_s		     = (\'s )
 comment		   = \([^\(\)]*\)
 
 whitespace	   = [ \n\t]
@@ -134,6 +134,7 @@ identifier	   = [A-Za-z]+
 {in}		      { return getSymbol(sym.IN); }
 {for}		      { return getSymbol(sym.FOR); }
 {every}		    { return getSymbol(sym.EVERY); }
+{apo_s}		    { return getSymbol(sym.APO_S); }
 {period}	    { return getSymbol(sym.PERIOD); }
 {whitespace}  { /* Ignore. */ }
 {comment}	{ /* Ignore */ }

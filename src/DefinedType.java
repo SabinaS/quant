@@ -61,7 +61,7 @@ public class DefinedType{
         if( (index = fields.indexOf(field)) >= 0){
             fieldTypes.set(index,type);
         }
-        if(!type.equals("Object")) symrecord.setType(typeName+"."+field,type);
+        symrecord.setType(typeName+"."+field,type);
     }
 
     public void setValue(String field, String value){
