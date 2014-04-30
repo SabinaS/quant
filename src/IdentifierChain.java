@@ -1,23 +1,26 @@
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class IdentifierChain implements Node{
  
-    private LinkedList<Node> identifiers;
+    private ArrayList<String> identifiers;
 
-    public IdentifierChain(Node i){
-        identifiers = new LinkedList<Node>();
+    public IdentifierChain(String i){
+        identifiers = new ArrayList<String>();
         identifiers.add(i);
     }
 
     public void addChild(Node n){
-        identifiers.add(n);
+        return;
     }
 
+    public void addIdentifier(String i){
+        identifiers.add(i);
+    }
+
+    public ArrayList<String> getIdentifiers(){ return identifiers; }
+
     public Node[] getChildren(){
-        Node[] children = new Node[identifiers.size()];
-        for(int i = 0; i < children.size(); i++){
-            children[i] = identifiers.get(i);
-        }
+        Node[] children = {};
         return children;
     }
 

@@ -1,13 +1,15 @@
 public class MemberType implements Node{
 
     SymbolRecord symrecord;
-    Node typeIdentifier;
-    Node inheritsFrom;    
+    String identifier;
+    String type;    
+    String val;
 
-    public MemberType(Node t, Node i, SymbolRecord s){
+    public MemberType(String i, String t, String v, SymbolRecord s){
+        identifier = i;
+        type = t;
+        val = v;
         symrecord = s;
-        typeIdentifier = t;
-        inheritsFrom = i;
         // TODO:  symbol table management
     }
 
@@ -16,11 +18,7 @@ public class MemberType implements Node{
     }
 
     public Node[] getChildren(){
-        if(inheritsFrom == null){
-            Node[] children = { typeIdentifier };
-            return children;
-        }
-        Node[] children = {typeIdentifier, inheritsFrom};
+        Node[] children = { };
         return children;
     }
 

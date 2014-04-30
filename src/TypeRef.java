@@ -1,9 +1,9 @@
 public class TypeRef implements Node{
 
-    private Node identifier;
+    private String identifier;
     private SymbolRecord symrecord;
   
-    public void TypeRef(Node i, SymbolRecord s){
+    public TypeRef(String i, SymbolRecord s){
         identifier = i;
         symrecord = s;
     }
@@ -13,9 +13,11 @@ public class TypeRef implements Node{
     }
 
     public Node[] getChildren(){
-        Node[] children = {identifier};
+        Node[] children = {};
         return children;
     }
+
+    public String getType(){ return identifier; }
 
     public String[] translate(){
         String[] translation = {""};

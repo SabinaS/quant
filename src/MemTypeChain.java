@@ -1,4 +1,4 @@
-import java.util.LinkedList;
+import java.util.ArrayList;
 /**
  * Explicit type definition for the semantic node
  * representing a chain of member types
@@ -7,11 +7,11 @@ import java.util.LinkedList;
  */
 public class MemTypeChain implements Node{
     
-    private LinkedList<Node> memTypes;
+    ArrayList<Node> memTypes;
     
     public MemTypeChain(Node memType)
     {
-    	  memTypes = new LinkedList<Node>();
+    	  memTypes = new ArrayList<Node>();
     	  memTypes.add(memType);
     }
     
@@ -20,7 +20,7 @@ public class MemTypeChain implements Node{
     }
 
     public Node[] getChildren(){
-        Node[] children = new Node[mems.size()];
+        Node[] children = new Node[memTypes.size()];
         for(int i = 0; i< memTypes.size(); i++)
         {
         	children[i] = memTypes.get(i);

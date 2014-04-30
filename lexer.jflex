@@ -18,6 +18,7 @@ import java_cup.runtime.*;
 %cup
 %line
 %column
+%debug
 %unicode              /* turn on debugging for now */
 %class QuantLexer
 %{
@@ -61,7 +62,7 @@ period		= \.
 lparen		= \(
 rparen		= \)
 
-a		  = (a |A )
+a		  = (a |A |an |An )
 is		    = (is)
 are		  = (are)
 if		    = (if|If)
@@ -81,6 +82,9 @@ there          = (There |there )
 in		         = (in)
 for		         = (for)
 every 		     = (every)
+has		     = (has)
+with		     = (with)
+having		     = (having)
 
 whitespace	   = [ \n\t]
 
@@ -109,6 +113,9 @@ identifier	   = [A-Za-z]+
 {is}		      { return getSymbol(sym.IS); }
 {in}		      { return getSymbol(sym.IN); }
 {a}		    { return getSymbol(sym.A); }
+{has}		    { return getSymbol(sym.HAS); }
+{with}		    { return getSymbol(sym.WITH); }
+{having}	    { return getSymbol(sym.HAVING); }
 {set}		      { return getSymbol(sym.SET); }
 {to}		      { return getSymbol(sym.TO); }
 {than}		    { return getSymbol(sym.THAN); }

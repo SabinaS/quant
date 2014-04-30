@@ -8,19 +8,31 @@
  */
 
 import java_cup.runtime.*;
+import java.util.ArrayList;
 
 action code {:
     public SymbolRecord symrecord = new SymbolRecord();
     public void identClassError(String identifier, int expected, int found){
-        System.out.println("Error: '"+identifier+"' is used as a "+
-            SymbolRecord.CLASSES[expected]+" but is a "+
-            SymbolRecord.CLASSES[found]+".");
+        System.out.println("It looks like you're using '"+identifier+"'as a "+
+            SymbolRecord.CLASSES[expected]+", but it's a "+
+            SymbolRecord.CLASSES[found]+"!");
         System.exit(0);
     }
     public void notDefinedError(String identifier){
-        System.out.println("Error: '"+identifier+"' is not defined.");
+        System.out.println("Wait a second!  What's a '"+identifier+"'?");
         System.exit(0);
     }
+    public void typeDefError(String type, String stype, int err){
+        if(err == SymbolRecord.TYPE_DEFINED)
+            System.out.println("Woops!  You've said what a '"+type+"' is twice!");
+        else if(err == SymbolRecord.SUPERTYPE_UNDEFINED)
+            System.out.println("Wait a second!  You said a '"+type+"' was a '"+stype+"'...\n"+
+                               "What's a '"+stype+"'?");
+        else
+            System.out.println("Woops!  It looks like you haven't said what a '"+type+"' is!");
+        System.exit(0);
+    }
+    
 :}
 
 parser code {:
@@ -110,6 +122,9 @@ line		::= statement:stmt line_terminator:lt
 		    rate_dec:rd line_terminator:lt
 	 	    {: RESULT = new Line(rd,lt); :}
 		    |
+                    type_dec:td line_terminator:lt
+                    {: RESULT = new Line(td,lt); :}
+                    |
                     cond_block:cb
 		    {: RESULT = cb; :}
                     ;
@@ -128,14 +143,31 @@ rate_dec	::= THERE IS number:n unit:u IN number:n2 unit:u2
 		    ;
 
 type_dec	::= type_sig:sig COLON mem_type_chain:mem_chain    
-		    {: :}
+		    {: 
+                       TypeDec dec = new TypeDec(sig, null, symrecord);
+                       String type = ((TypeRef) ((TypeSignature) sig).typeRef).getType();
+                       DefinedType oType = symrecord.getTypeObj(type);
+                       ArrayList<Node> mTypes = ((MemTypeChain) mem_chain).memTypes;
+                       for(int i = 0; i < mTypes.size(); i++){
+                           MemberType mt = (MemberType) mTypes.get(i);
+                           oType.setValue(mt.identifier,mt.type,mt.val);
+                       }
+                       RESULT = dec;
+                    :}
 		    |
 		    type_sig:sig
-		    {: :}
+		    {: RESULT = new TypeDec(sig, null, symrecord); :}
 		    ;
 
 type_sig	::= type_ref:ref HAS ident_chain:ident_chain
-		    {: :}
+		    {: 
+                       String type = ((TypeRef) ref).getType();
+                       int err = symrecord.defineType(type,null);
+                       if(err != 0)
+                           typeDefError(type,null,err);
+                       symrecord.addTypeFields(type,((IdentifierChain) ident_chain).getIdentifiers());
+                       RESULT = new TypeSignature(ref,ident_chain,symrecord); 
+                    :}
 		    |
 		    type_ref:ref WITH ident_chain:ident_chain
 		    {: :}
@@ -143,51 +175,94 @@ type_sig	::= type_ref:ref HAS ident_chain:ident_chain
 		    type_ref:ref HAVING ident_chain:ident_chain
 		    {: :}
 		    |
-		    type_ref:ref IS A type_ref:ref2 HAS
+                    type_ref:ref IS type_ref:ref2
+                    {:
+                        String nType = ((TypeRef) ref).getType();
+                        String sType = ((TypeRef) ref2).getType();
+                        int err = symrecord.defineType(nType,sType);
+                        if(err != 0)
+                           typeDefError(nType,sType,err);
+                        RESULT = new TypeSignature(ref,ref2,null,symrecord);
+                    :}
+                    |
+		    type_ref:ref IS type_ref:ref2 WITH ident_chain:ident_chain
 		    {: :}
 		    |
-		    type_ref:ref IS A type_ref:ref2 WITH
-		    {: :}
-		    |
-		    type_ref:ref IS A type_ref:ref2 HAVING
+		    type_ref:ref IS type_ref:ref2 HAVING ident_chain:ident_chain
 		    {: :}
 		    ; 
 
 mem_type_chain  ::= mem_type_chain:mem_type AND mem_type:mem_type1
-		    {: :}
+		    {:
+                       mem_type.addChild(mem_type1);
+                       RESULT = mem_type; 
+                    :}
 		    |
 		    mem_type_chain:mem_type_chain CONNECTOR mem_type:mem
-		    {: :}
+		    {:
+                       mem_type_chain.addChild(mem);
+                       RESULT = mem_type_chain; 
+                    :}
+		    |
+		    mem_type_chain:mem_type_chain CONNECTOR AND mem_type:mem
+		    {:
+                       mem_type_chain.addChild(mem);
+                       RESULT = mem_type_chain; 
+                    :}
 		    |
 		    mem_type:mem
-		    {: :}
+		    {: RESULT = new MemTypeChain(mem); :}
 		    ;
 
-mem_type	::= IDENTIFIER:ident1 IS A type_ref:ref
-		    {: :}
+mem_type	::= IDENTIFIER:ident1 IS type_ref:ref
+		    {:
+                        String type = ((TypeRef) ref).getType();
+                        if(symrecord.typeIsDefined(type)){
+                            typeDefError(ident1,null,10);
+                        }
+                        RESULT = new MemberType(ident1, type, "new "+type+"()", symrecord);
+                    :}
 		    |
 		    IDENTIFIER:ident2 IS expression:expr
-		    {: :}
+		    {:
+                        if(expr.getSemanticRepresentation().equals("STRING")){
+                            RESULT = new MemberType(ident2,"String", expr.translate()[1], symrecord);
+                        } else{
+                            String trans = expr.translate()[1];
+                            trans = trans.replace("factory.","");
+                            if(expr.getSemanticRepresentation().equals(""))
+                            	RESULT = new MemberType(ident2,"NUMVAL",trans+".clone()",symrecord);
+                            else
+                                RESULT = new MemberType(ident2,expr.getSemanticRepresentation(),
+                                              trans+".clone()",symrecord); 
+                        } 
+                    :}
 		    ;
 
 type_ref	::= A IDENTIFIER:ident1
-		    {: :}
-		    |
-		    IDENTIFIER:ident2
-		    {: :}
+		    {: int i = symrecord.setClass(ident1, SymbolRecord.TYPE_CLASS); 
+                       if(i != 0){ identClassError(ident1, SymbolRecord.TYPE_CLASS, i); }
+                       RESULT = new TypeRef(ident1,symrecord); 
+                    :}
 		    ;
 
 ident_chain  	::= IDENTIFIER:ident1
-		    {: :}
+		    {: RESULT = new IdentifierChain(ident1); :}
 		    |
 		    ident_chain:ident2 AND IDENTIFIER:ident3
-		    {: :}
+		    {: ((IdentifierChain) ident2).addIdentifier(ident3); 
+                       RESULT = ident2;
+                    :}
 		    |
 		    ident_chain:ident4 CONNECTOR IDENTIFIER:ident5
-		    {: :}
+		    {: ((IdentifierChain) ident4).addIdentifier(ident5); 
+                       RESULT = ident4;
+                    :} 
 		    |
-		    ident_chain:ident6 CONNECTOR AND IDENTIFIER:ident7
-		    {: :}
+		    ident_chain:ident6 CONNECTOR AND IDENTIFIER:ident7 
+		    {: ((IdentifierChain) ident6).addIdentifier(ident7); 
+                       RESULT = ident6;
+                    :}
 		    ;
 
 

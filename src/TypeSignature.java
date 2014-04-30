@@ -6,7 +6,8 @@
 
 public class TypeSignature implements Node{
 
-    private Node typeRef;
+    Node typeRef;
+    private Node stypeRef;
     private Node identifierChain;
     private SymbolRecord symrecord;
 
@@ -14,7 +15,15 @@ public class TypeSignature implements Node{
         typeRef = t;
         identifierChain = i;
         symrecord = s;
+        stypeRef = null;
         // TODO:  symbol table manipulation
+    }
+  
+    public TypeSignature(Node t, Node st, Node i, SymbolRecord sr){
+        typeRef = t;
+        stypeRef = st;
+        identifierChain = i;
+        symrecord = sr;
     }
 
     public void addChild(Node n){
