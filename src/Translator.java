@@ -59,6 +59,14 @@ public class Translator{
                     if(type.fieldTypes.get(j).equals("Object"))
                         typeBlock+="\t"+type.fields.get(j)+" = new "+
                             type.fieldTypes.get(j)+"();\n";
+                    else if(type.fieldTypes.get(j).equals("NUMVAL"))
+                        typeBlock+="\t"+type.fields.get(j)+" = new "+
+                            type.fieldTypes.get(j)+"(0, new UNIT(\"\",factory));\n";
+                    else if(type.fieldTypes.get(j).equals("String"))
+                        typeBlock+="\t"+type.fields.get(j)+" = \"\";\n";
+                    else if(type.fieldTypes.get(j).contains("__COL"))
+                        typeBlock+="\t"+type.fields.get(j)+" = new "+
+                            type.fieldTypes.get(j)+"(factory,0);\n";
                     else{
                         typeBlock+="\t"+type.fields.get(j)+" = new "+
                             type.fieldTypes.get(j)+"(factory);\n";
@@ -72,6 +80,38 @@ public class Translator{
                                type.fields.get(j) +";\n";
             }
             typeBlock +="}\n";
+            // Collections
+            typeBlock +="class "+type.typeName+"__COL{\n"+
+                        "    public ArrayList<"+type.typeName+"> col;\n"+
+                        "    public "+pname+" factory;\n"+
+                        "    public "+type.typeName+"__COL("+pname+" f, int ct){\n"+
+                        "        factory = f;\n"+
+                        "        col = new ArrayList<"+type.typeName+">();\n"+
+                        "        for(int i = 0; i < ct; i++){\n"+
+                        "            col.add(new "+type.typeName+"(factory));\n"+
+                        "        }}\n"+
+                        "    public NUMVAL count(){ return new NUMVAL(col.size(), new UNIT(\""+type.typeName+"s\",factory)); }\n";
+                        
+            for(int j = 0; j < type.fields.size(); j++){
+                String fType = type.fieldTypes.get(j);
+                if(fType.equals("NUMVAL")){
+                    typeBlock+="public NUMVAL total"+type.fields.get(j)+"(){\n"+
+                               "    NUMVAL tot = new NUMVAL(0, new UNIT(\"\",factory);\n"+
+                               "    for(int i = 0; i < col.size(); i++){\n"+
+                               "        tot.VALPLUS(col.get(i)."+type.fields.get(j)+");\n}\n"+
+                               "    return tot;\n"+
+                               "}";
+                } if(fType.contains("__COL")){
+                    typeBlock+="public NUMVAL total"+type.fields.get(j)+"(){\n"+
+                               "    NUMVAL tot = "+type.fields.get(j)+".count();\n"+
+                               "    for(int i = 0; i < col.size(); i++){\n"+
+                               "        tot.VALPLUS(col.get(i)."+type.fields.get(j)+".count());\n}\n"+
+                               "    return tot;\n"+
+                               "}";
+
+                }
+            }
+            typeBlock += "\n}\n";
             tr += typeBlock;
         }
         return tr;
@@ -128,6 +168,7 @@ public class Translator{
                       "}";
         return java;
     }
+
            public static String getUnitStructure(String pname){
                 return 
                 "class UNIT{\n"+
@@ -177,7 +218,7 @@ public class Translator{
                 "        strForm = strForm.substring(0,strForm.length()-1) +"+
                 "        \")\";"+
                 "        if(denominator.size()>0){\n"+
-                "            strForm += \"(\";\n"+
+                "            strForm += \"/(\";\n"+
                 "            for(String s:denominator)\n"+
                 "                strForm += s+\"*\";\n"+
                 "            strForm = strForm.substring(0,strForm.length()-1)"+
@@ -194,7 +235,7 @@ public class Translator{
     private class StaticCode{
         public String getFactoryStructure(String n){
             return n + " factory = new " + n + "();\n";
-        }
+        } 
         public static final String VALUE_STRUCTURE =
             "class NUMVAL{\n"+
             "    public int vi = 0;\n"+

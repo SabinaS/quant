@@ -10,7 +10,7 @@ public class Value implements Node{
     
     /** Semantic node containing specific
       * value type. */
-    private Node wrappedValue;
+    Node wrappedValue;
     String initChain = "";
 
     /**
@@ -41,6 +41,6 @@ public class Value implements Node{
 
     public String getSemanticRepresentation(){
         // TODO
-        return "";
+        return wrappedValue.getSemanticRepresentation();
     }
 }

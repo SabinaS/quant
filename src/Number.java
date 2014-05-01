@@ -14,7 +14,7 @@ public class Number implements Node{
     /** Value if number is rational. */
     private double rVal;
     /** Value if number is an integer. */
-    private int iVal;
+    int iVal;
     /** Semantic flag denoting whether the number
      *  is rational or an integer. */
     private int const_type;
@@ -28,6 +28,8 @@ public class Number implements Node{
         iVal = i;
         const_type = Node.SEM_INT_CONST;
     }
+
+    public int getNumCat(){ return const_type; }
 
     /**
      * Constructs a Number node for a rational

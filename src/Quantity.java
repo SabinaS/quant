@@ -56,6 +56,6 @@ public class Quantity implements Node{
 
     public String getSemanticRepresentation(){
         // TODO
-        return "";
+        return "NUMVAL";
     }
 }

@@ -11,7 +11,7 @@ public class Variable implements Node{
      */
     private SymbolRecord symrecord;
     String name;
-    String initChain = "";
+    String trDef = "";
 
     int ignoreDecl = 0;
     String oType;
@@ -51,7 +51,10 @@ public class Variable implements Node{
 	String literal = ( ignoreDecl==1 || symrecord.isDeclared(name) ? "" : 
                            symrecord.getType(name) ) + " "+name;
         symrecord.setDeclared(name,1);
-        translation[1] = literal;
+        if(trDef.equals(""))
+            translation[1] = literal;
+        else
+            translation[1] = trDef;
         return translation;
     }
     

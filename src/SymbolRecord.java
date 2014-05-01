@@ -22,6 +22,8 @@ public class SymbolRecord{
     public static int TYPE_CLASS = 3;
     /** Encoding for a user-defined class. */
     public static int UDEF_CLASS = 4;
+    /** Encoding for a field function of an object. */
+    public static int TFUNC_CLASS = 5;
 
     /** Encoding for an unknown type. */
     public static String UNKNOWN_TYPE = "!TUNKNOWN";

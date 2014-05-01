@@ -116,6 +116,8 @@ non terminal Node mem_type_chain;
 non terminal Node mem_type;
 non terminal Node mem_ref; 
 non terminal Node ident_chain;   
+non terminal Node obj_func_dec;
+non terminal Node field_expr;
 
 precedence left LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
 precedence left AND, OR;
@@ -139,6 +141,9 @@ line		::= statement:stmt line_terminator:lt
 		    rate_dec:rd line_terminator:lt
 	 	    {: RESULT = new Line(rd,lt); :}
 		    |
+                    obj_func_dec:od line_terminator:lt
+                    {: RESULT = new Line(od,lt); :}
+                    |
                     type_dec:td line_terminator:lt
                     {: RESULT = new Line(td,lt); :}
                     |
@@ -175,6 +180,19 @@ type_dec	::= type_sig:sig COLON mem_type_chain:mem_chain
 		    type_sig:sig
 		    {: RESULT = new TypeDec(sig, null, symrecord); :}
 		    ;
+
+obj_func_dec	::= type_ref:ref APO_S IDENTIFIER:ident IS field_expr:expr
+		    {:
+                       TypeRef tref = (TypeRef) ref;
+                       FieldExpression fexpr = (FieldExpression) expr;
+
+                       String func = ident;
+                       ArrayList<String> parts = fexpr.getParts();
+                       symrecord.getTypeObj(tref.getType()).addFunc(func,parts);
+
+		       RESULT = new BlankNode();
+                    :}
+                    ;
 
 type_sig	::= type_ref:ref HAS ident_chain:ident_chain
 		    {: 
@@ -362,8 +380,7 @@ ident_chain  	::= IDENTIFIER:ident1
                        RESULT = ident6;
                     :}
 
-		    ;
-
+		    ; 
 
 statement	::= optv_statement:ostmt
 		    {: RESULT = new Statement(ostmt); :}
@@ -514,11 +531,11 @@ asmt_statement	::= field:f IS expression:v
 		       if(v.getSemanticRepresentation().equals("STRING"))
 		           ((Variable) f).setType(SymbolRecord.STRING_TYPE);
 		       else
-		           ((Variable) f).setType(SymbolRecord.QUANTITY_TYPE);
+		           ((Variable) f).setType(v.getSemanticRepresentation());
                        String left, right;
                        Variable var = (Variable) f;
                        String assType = v.getSemanticRepresentation().equals("STRING") ? "String" : 
-                           "NUMVAL";
+                           v.getSemanticRepresentation();
                        if(var.name.indexOf('.')>=0){
                            left = var.name.substring(0, var.name.indexOf('.'));
                            right = var.name.substring(var.name.indexOf('.')+1);
@@ -543,11 +560,11 @@ asmt_statement	::= field:f IS expression:v
 		    {: if(v.getSemanticRepresentation().equals("STRING"))
 		           ((Variable) f).setType(SymbolRecord.STRING_TYPE);
 		       else
-		           ((Variable) f).setType(SymbolRecord.QUANTITY_TYPE);
+		           ((Variable) f).setType(v.getSemanticRepresentation());
                        String left, right;
                        Variable var = (Variable) f;
                        String assType = v.getSemanticRepresentation().equals("STRING") ? "String" : 
-                           "NUMVAL";
+                           v.getSemanticRepresentation();
                        if(var.name.indexOf('.')>=0){
                            left = var.name.substring(0, var.name.indexOf('.'));
                            right = var.name.substring(var.name.indexOf('.')+1);
@@ -614,6 +631,52 @@ operative_kwd	::= PRINT
 		    {: RESULT = new OperativeKeyword(Node.SEM_PRINT_KWD); :}
 		    ;
 
+field_expr	::= STRING_LITERAL:s
+                    {:
+                       RESULT = new FieldExpression(new StringConstant(s), null, -1);
+                    :}
+                    |
+                    quantity:q
+                    {:
+                       RESULT = new FieldExpression(q,null,-1);
+                    :}
+                    |
+                    IDENTIFIER:ident
+                    {:
+                       RESULT = new FieldExpression(ident);
+                    :}
+		    |
+		    ITS IDENTIFIER:ident
+                    {:
+                       RESULT = new FieldExpression(ident);
+		    :}
+		    |
+		    field_expr:l PLUS field_expr:r
+		    {:
+                       RESULT = new FieldExpression(l,r,Node.SEM_PLUS);
+		    :}
+		    |
+		    field_expr:l MINUS field_expr:r
+		    {:
+                       RESULT = new FieldExpression(l,r,Node.SEM_MINUS);
+		    :}
+		    |
+		    field_expr:l TIMES field_expr:r
+		    {:
+                       RESULT = new FieldExpression(l,r,Node.SEM_TIMES);
+		    :}
+		    |
+		    field_expr:l DIVIDE field_expr:r
+		    {:
+                       RESULT = new FieldExpression(l,r,Node.SEM_DIVIDE);
+		    :}
+                    |
+                    LPAREN field_expr:e RPAREN
+                    {:
+                       RESULT = e;
+                    :}
+		    ;
+
 expression	::= expression:l PLUS expression:r
 		    {: RESULT = new Expression(l,r, Node.SEM_PLUS); :}
 		    |
@@ -647,7 +710,30 @@ value		::= STRING_LITERAL:s
 		    ;
 
 quantity	::= number:num unit:u
-		    {: System.out.println("quantity"); RESULT = new Quantity(num, u); :}
+		    {: 
+                       String unit = ((Unit) u).unit;
+                       if(!symrecord.typeIsDefined(unit) &&
+                                symrecord.typeIsDefined(unit.substring(0,unit.length()-1)))
+                           unit = unit.substring(0,unit.length()-1);
+                      
+                       if(symrecord.typeIsDefined(unit)){
+                           if(((Number) num).getNumCat() == Node.SEM_INT_CONST){
+                               // Treat as collection
+                               if(((Number) num).iVal < 0){
+                                   System.out.println("You can't have less than 0 "+unit+"s!");
+                                   System.exit(0);
+                               }
+                               else{
+                                   RESULT = new Collection(unit,((Number) num).iVal);
+                               }
+                           }
+                           else
+                               RESULT = new Quantity(num, u);
+                       }
+                       else{
+                           RESULT = new Quantity(num, u);
+                       }                       
+                    :}
                     |
 		    number:num
 		    {: RESULT = new Quantity(num, null); :}
@@ -684,7 +770,8 @@ field		::= IDENTIFIER:ident
                     mem_ref:mem
 		    {:
                        Variable v = new Variable( ((MemberRef) mem).getName(), symrecord );
-                       v.initChain = ((MemberRef) mem).chain();
+          
+                       v.trDef = ((MemberRef) mem).funcRef ? ((MemberRef) mem).translate()[1] : "";
                        v.ignoreDecl = 1;
                        RESULT = v;
                     :}
@@ -694,14 +781,25 @@ mem_ref		::= field:ident1 APO_S IDENTIFIER:ident2
 		    {:
                         String type = symrecord.getType(((Variable) ident1).getName());
                         String mType = "";
+                        boolean isFunc = false;
                         DefinedType typeObj = symrecord.getTypeObj(type);
-                        if(typeObj==null||!typeObj.fields.contains(ident2))
+                        if(typeObj==null||(!typeObj.fields.contains(ident2) && 
+                                !typeObj.funcs.contains(ident2)))
                             typeMembError(((Variable) ident1).getName(), ident2);
-                        mType = typeObj.fieldTypes.get(typeObj.fields.indexOf(ident2));
+                        else if(typeObj.funcs.contains(ident2)){
+                            int index = typeObj.funcs.indexOf(ident2);
+                            typeObj.popFunc(ident2);
+                            mType = typeObj.funcTypes.get(index);
+                            if(mType.equals("NONE")) mType = "STRING";
+                            isFunc = true;
+                        }
+                        else
+                            mType = typeObj.fieldTypes.get(typeObj.fields.indexOf(ident2));
+                        
                         symrecord.setType(((Variable) ident1).getName()+"."+ident2, mType);
                         
                         MemberRef ref = new MemberRef(ident1, ident2, mType, symrecord);
-                        ref.initChain = ((Variable) ident1).initChain;
+                        ref.funcRef = isFunc;    
                         RESULT = ref;
                     :}
 		    ;

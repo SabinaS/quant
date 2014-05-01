@@ -7,7 +7,7 @@
 
 public class Unit implements Node{
     /** String identifier referring to the unit. */    
-    private String unit;
+    String unit;
     
     /**
      * Constructs a Unit for a

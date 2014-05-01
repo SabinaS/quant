@@ -15,7 +15,7 @@ public class Expression implements Node{
     private int operation;
 
     String initChain = "";
-
+    String semRep = "";
     /** Constructs an Expression node.
       * @param l lhs of the expression
       * @param r rhs of the expression
@@ -26,7 +26,9 @@ public class Expression implements Node{
         rhs = r;
         String lc = l.getSemanticRepresentation();
         String rc = r.getSemanticRepresentation();
-        
+        if(lc.equals("STRING")) lc = "String";
+        if(rc.equals("STRING")) rc = "String";
+        semRep = lc;
         operation = o;
     }
 
@@ -49,7 +51,7 @@ public class Expression implements Node{
 
     public String getSemanticRepresentation(){
         // TODO
-        return "NUMVAL";
+        return semRep;
     }
 
     private String getOp(){

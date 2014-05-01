@@ -63,7 +63,8 @@ public class Line implements Node{
             // The qualifier's directive can be ignored.
             translation = new String[2];
             translation[0] = Translator.IN_PLACE;
-            translation[1] = qualifier.translate()[1] + ";";
+            String tr = qualifier.translate()[1];
+            translation[1] = tr + (tr.length() > 0 ? ";" : "");
          }
 
         return translation;
