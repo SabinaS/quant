@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class Translator{
 
 
-    public static final String BEFORE_LINE = "BEFORE";
+    public static final String BEFORE = "BEFORE";
 
     /** Translation directive for default placement. */
     public static final String IN_PLACE = "IN PLACE";
@@ -43,12 +43,27 @@ public class Translator{
         String tr = "";
         for(int i = 0; i < types.size(); i++){
             DefinedType type = types.get(i);
+            if(type.linksToType(type.typeName)){
+                System.out.println("Hold on!  You're saying that a "+type.typeName+" has "+
+                                      "to contain itself!  Never-ending "+type.typeName+"s!");
+                System.exit(0);
+            }
+     
             String typeBlock = "class "+type.typeName+"{\n"+
                                 "\t"+pname+" factory;\n"+
                                 "\tpublic "+type.typeName+"("+pname+" f){\n\tfactory = f;\n";
             for(int j = 0; j < type.fields.size(); j++){
                 if(type.fieldValues.get(j).length() > 0){
                     typeBlock+="\t"+type.fields.get(j)+" = "+type.fieldValues.get(j)+";\n";
+                } else{
+                    if(type.fieldTypes.get(j).equals("Object"))
+                        typeBlock+="\t"+type.fields.get(j)+" = new "+
+                            type.fieldTypes.get(j)+"();\n";
+                    else{
+                        typeBlock+="\t"+type.fields.get(j)+" = new "+
+                            type.fieldTypes.get(j)+"(factory);\n";
+
+                    }
                 }
             } 
             typeBlock+= "}\n";

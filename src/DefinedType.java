@@ -71,9 +71,24 @@ public class DefinedType{
     public void setType(String field, String type){
         int index;
         if( (index = fields.indexOf(field)) >= 0){
+            if(type.equals(typeName)){
+                System.out.println("Hold on! You can't put a "+type+" in a "+type+"!  Never-ending "+
+                    type+"s!");
+                System.exit(0);
+            }
             fieldTypes.set(index,type);
         }
         symrecord.setType(typeName+"."+field,type);
+    }
+
+    public boolean linksToType(String type){
+        for(int i = 0; i < fields.size(); i++){
+            String t = fieldTypes.get(i);
+            DefinedType to = symrecord.getTypeObj(t);
+            if(t.equals(type)) return true;
+            if(to!=null&&to.linksToType(type)) return true;
+        }
+        return false;
     }
 
     public void setValue(String field, String value){

@@ -58,6 +58,7 @@ terminal PRINT;
 terminal A; 
 terminal IS_A;
 terminal IS, ARE;
+terminal ITS;
 terminal SET;
 terminal TO, THAN, NOT; 
 terminal IF, THEN, ELSE, WHILE;
@@ -186,10 +187,25 @@ type_sig	::= type_ref:ref HAS ident_chain:ident_chain
                     :}
 		    |
 		    type_ref:ref WITH ident_chain:ident_chain
-		    {: :}
+                    {:
+                       String type = ((TypeRef) ref).getType();
+                       int err = symrecord.defineType(type,null);
+                       if(err != 0)
+                           typeDefError(type,null,err);
+                       symrecord.addTypeFields(type,((IdentifierChain) ident_chain).getIdentifiers());
+                       RESULT = new TypeSignature(ref,ident_chain,symrecord); 
+		    :}
 		    |
 		    type_ref:ref HAVING ident_chain:ident_chain
-		    {: :}
+		    {:
+                       String type = ((TypeRef) ref).getType();
+                       int err = symrecord.defineType(type,null);
+                       if(err != 0)
+                           typeDefError(type,null,err);
+                       symrecord.addTypeFields(type,((IdentifierChain) ident_chain).getIdentifiers());
+                       RESULT = new TypeSignature(ref,ident_chain,symrecord); 
+ 
+                    :}
 		    |
                     type_ref:ref IS type_ref:ref2
                     {:
@@ -198,14 +214,35 @@ type_sig	::= type_ref:ref HAS ident_chain:ident_chain
                         int err = symrecord.defineType(nType,sType);
                         if(err != 0)
                            typeDefError(nType,sType,err);
-                        RESULT = new TypeSignature(ref,ref2,null,symrecord);
+                        //symrecord.addTypeFields(ntype,((IdentifierChain) ident_chain).getIdentifiers());
+                        TypeSignature ts = new TypeSignature(ref,ref2,null,symrecord);
+                        RESULT = ts;
                     :}
                     |
 		    type_ref:ref IS type_ref:ref2 WITH ident_chain:ident_chain
-		    {: :}
+		    {:
+                        String nType = ((TypeRef) ref).getType();
+                        String sType = ((TypeRef) ref2).getType();
+                        int err = symrecord.defineType(nType,sType);
+                        if(err != 0)
+                           typeDefError(nType,sType,err);
+                        symrecord.addTypeFields(nType,((IdentifierChain) ident_chain).getIdentifiers());
+                        TypeSignature ts = new TypeSignature(ref,ref2,null,symrecord);
+                        RESULT = ts;
+                    :}
 		    |
 		    type_ref:ref IS type_ref:ref2 HAVING ident_chain:ident_chain
-		    {: :}
+		    {:
+                        String nType = ((TypeRef) ref).getType();
+                        String sType = ((TypeRef) ref2).getType();
+                        int err = symrecord.defineType(nType,sType);
+                        if(err != 0)
+                           typeDefError(nType,sType,err);
+                        symrecord.addTypeFields(nType,((IdentifierChain) ident_chain).getIdentifiers());
+                        TypeSignature ts = new TypeSignature(ref,ref2,null,symrecord);
+                        RESULT = ts;
+ 
+                    :}
 		    ; 
 
 mem_type_chain  ::= mem_type_chain:mem_type AND mem_type:mem_type1
@@ -254,6 +291,32 @@ mem_type	::= IDENTIFIER:ident1 IS type_ref:ref
                             }
                         } 
                     :}
+                    |
+		    ITS IDENTIFIER:ident1 IS type_ref:ref
+		    {:
+                        String type = ((TypeRef) ref).getType();
+                        if(!symrecord.typeIsDefined(type)){
+                            typeDefError(ident1,null,10);
+                        }
+                        RESULT = new MemberType(ident1, type, "" , symrecord);
+                    :}
+		    |
+		    ITS IDENTIFIER:ident2 IS expression:expr
+		    {:
+                        if(expr.getSemanticRepresentation().equals("STRING")){
+                            RESULT = new MemberType(ident2,"String", expr.translate()[1], symrecord);
+                        } else{
+                            String trans = expr.translate()[1];
+                            if(expr.getSemanticRepresentation().equals(""))
+                            	RESULT = new MemberType(ident2,"NUMVAL",trans,symrecord);
+                            else{
+                                String t = expr.getSemanticRepresentation();
+                                RESULT = new MemberType(ident2,expr.getSemanticRepresentation(),
+                                                trans,symrecord);
+                            }
+                        } 
+                    :}
+
 		    ;
 
 type_ref	::= A IDENTIFIER:ident1
@@ -280,6 +343,25 @@ ident_chain  	::= IDENTIFIER:ident1
 		    {: ((IdentifierChain) ident6).addIdentifier(ident7); 
                        RESULT = ident6;
                     :}
+		    |
+		    A IDENTIFIER:ident1
+		    {: RESULT = new IdentifierChain(ident1); :}
+		    |
+		    ident_chain:ident2 AND A IDENTIFIER:ident3
+		    {: ((IdentifierChain) ident2).addIdentifier(ident3); 
+                       RESULT = ident2;
+                    :}
+		    |
+		    ident_chain:ident4 CONNECTOR A IDENTIFIER:ident5
+		    {: ((IdentifierChain) ident4).addIdentifier(ident5); 
+                       RESULT = ident4;
+                    :} 
+		    |
+		    ident_chain:ident6 CONNECTOR AND A IDENTIFIER:ident7 
+		    {: ((IdentifierChain) ident6).addIdentifier(ident7); 
+                       RESULT = ident6;
+                    :}
+
 		    ;
 
 
@@ -475,6 +557,7 @@ asmt_statement	::= field:f IS expression:v
                            }
                            // Infer type
                            String type = symrecord.getType(left);
+                           System.out.println(type);
                            DefinedType typeObj = symrecord.getTypeObj(type);
                            if(typeObj!=null&&symrecord.getType(type+"."+right).equals("Object")){ 
                                typeObj.setType(right, assType); 
@@ -601,6 +684,7 @@ field		::= IDENTIFIER:ident
                     mem_ref:mem
 		    {:
                        Variable v = new Variable( ((MemberRef) mem).getName(), symrecord );
+                       v.initChain = ((MemberRef) mem).chain();
                        v.ignoreDecl = 1;
                        RESULT = v;
                     :}
@@ -615,7 +699,10 @@ mem_ref		::= field:ident1 APO_S IDENTIFIER:ident2
                             typeMembError(((Variable) ident1).getName(), ident2);
                         mType = typeObj.fieldTypes.get(typeObj.fields.indexOf(ident2));
                         symrecord.setType(((Variable) ident1).getName()+"."+ident2, mType);
-                        RESULT = new MemberRef(ident1, ident2, mType);
+                        
+                        MemberRef ref = new MemberRef(ident1, ident2, mType, symrecord);
+                        ref.initChain = ((Variable) ident1).initChain;
+                        RESULT = ref;
                     :}
 		    ;
 

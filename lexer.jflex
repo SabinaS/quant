@@ -57,11 +57,12 @@ or		    = (\|\||or)
 
 connector	= (\,|now)
 semicolon	= (\;)
-colon		  = (\:)
+colon		  = (\:|\-\-)
 period		= \.
 lparen		= \(
 rparen		= \)
 
+its		  = (Its |its )
 a		  = (a |A |an |An )
 is		    = (is)
 are		  = (are)
@@ -99,9 +100,11 @@ identifier	   = [A-Za-z]+
 {integer}	    { return getSymbol(sym.INTEGER_LITERAL, new Integer(yytext())); }
 {rat_num}	    { return getSymbol(sym.RATIONAL_LITERAL, new Double(yytext())); }
 {plus}		    { return getSymbol(sym.PLUS); }
+{colon}		    { return getSymbol(sym.COLON); }
 {minus}		    { return getSymbol(sym.MINUS); }
 {times}		    { return getSymbol(sym.TIMES); }
 {divide}	    { return getSymbol(sym.DIVIDE); }
+{its}		    { return getSymbol(sym.ITS); }
 {if}		      { return getSymbol(sym.IF); }
 {then}		    { return getSymbol(sym.THEN); }
 {else}		    { return getSymbol(sym.ELSE); }
@@ -128,7 +131,6 @@ identifier	   = [A-Za-z]+
 {rparen}	    { return getSymbol(sym.RPAREN); }
 {connector}	  { return getSymbol(sym.CONNECTOR); }
 {semicolon}	  { return getSymbol(sym.SEMICOLON); }
-{colon}		    { return getSymbol(sym.COLON); }
 {and}		      { return getSymbol(sym.AND); }
 {or}		      { return getSymbol(sym.OR); }
 {in}		      { return getSymbol(sym.IN); }

@@ -11,6 +11,7 @@ public class Value implements Node{
     /** Semantic node containing specific
       * value type. */
     private Node wrappedValue;
+    String initChain = "";
 
     /**
      * Constructs a value, wrapping n.

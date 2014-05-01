@@ -11,7 +11,7 @@ public class Variable implements Node{
      */
     private SymbolRecord symrecord;
     String name;
-    String initChain;
+    String initChain = "";
 
     int ignoreDecl = 0;
     String oType;

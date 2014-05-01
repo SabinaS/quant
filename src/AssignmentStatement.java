@@ -55,6 +55,7 @@ public class AssignmentStatement implements Node{
         String[] arr = {"",""};
         arr[0] = Translator.IN_PLACE;
         if(mode == Node.ASSMNT_MODE){
+            String[] vTr = value.translate();
             arr[1] = toSet.translate()[1]+" = "+
                 value.translate()[1];
         }

@@ -14,6 +14,8 @@ public class Expression implements Node{
     /** Operation represented. */
     private int operation;
 
+    String initChain = "";
+
     /** Constructs an Expression node.
       * @param l lhs of the expression
       * @param r rhs of the expression
@@ -22,6 +24,9 @@ public class Expression implements Node{
     public Expression(Node l, Node r, int o){
         lhs = l;
         rhs = r;
+        String lc = l.getSemanticRepresentation();
+        String rc = r.getSemanticRepresentation();
+        
         operation = o;
     }
 
@@ -33,10 +38,12 @@ public class Expression implements Node{
     }
 
     public String[] translate(){
-        String[] translation = new String[2];
+        String[] translation = new String[4];
         translation[0] = Translator.IN_PLACE;
         translation[1] = lhs.translate()[1] + getOp() +
             rhs.translate()[1] + ")";
+        translation[2] = Translator.BEFORE;
+        translation[3] = initChain;
         return translation;
     }
 
