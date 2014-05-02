@@ -204,6 +204,15 @@ agg_expr	::= TOTAL IDENTIFIER:ident OF quantity:qnt
                        boolean isFunc = type.funcs.contains(ident);
                        RESULT = new Aggregator(qunit.unit, ident, qnumber.iVal, symrecord, isFunc);
 		    :}
+		    |
+                    TOTAL IDENTIFIER:ident OF field:f 
+                    {:
+                        if(!symrecord.getType(((Variable) f).getName()).equals("NUMVAL")){
+                            System.out.println("You can't find a total on "+((Variable) f).getName());
+                            System.exit(0);
+                        }
+                       RESULT = new Aggregator(((Variable) f),symrecord,ident);
+		    :}
 		    ;
 
 obj_func_dec	::= type_ref:ref APO_S IDENTIFIER:ident IS field_expr:expr
@@ -580,6 +589,14 @@ asmt_statement	::= field:f IS expression:v
                                typeMismatch(type, right, symrecord.getType(type+"."+right), assType);
                            }
                        }
+                       if(v.getClass().getName().equals("Value")){
+                           Value vv = (Value) v;
+                         
+                           if(vv.wrappedValue.getClass().getName().equals("Quantity")){
+                               Quantity vq = (Quantity) vv.wrappedValue;
+                               symrecord.unitMap.put(((Variable) f).getName(),((Unit)vq.unit).unit);
+                           }
+                       }
 		       RESULT = new AssignmentStatement(f,v,
 		                        Node.ASSMNT_MODE);
 		    :}
@@ -608,6 +625,14 @@ asmt_statement	::= field:f IS expression:v
                                typeObj.setType(right, assType); 
                            } else if(!symrecord.getType(type+"."+right).equals(assType)){
                                typeMismatch(type, right, symrecord.getType(type+"."+right), assType);
+                           }
+                       }
+                       if(v.getClass().getName().equals("Value")){
+                           Value vv = (Value) v;
+                         
+                           if(vv.wrappedValue.getClass().getName().equals("Quantity")){
+                               Quantity vq = (Quantity) vv.wrappedValue;
+                               symrecord.unitMap.put(((Variable) f).getName(),((Unit)vq.unit).unit);
                            }
                        }
 
@@ -777,8 +802,8 @@ unit		::= IDENTIFIER:ident
 		           identClassError(ident, SymbolRecord.UNIT_CLASS, 
 	 	               prevClass);
 		       RESULT = new Unit(ident);
-                    :}
-		    ;
+                     :}
+		     ;
 
 field		::= IDENTIFIER:ident
 		    {:

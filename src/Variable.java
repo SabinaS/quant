@@ -15,6 +15,8 @@ public class Variable implements Node{
 
     int ignoreDecl = 0;
     String oType;
+    int ct = 0;
+    String aType = "";
     /**
      * Constructs a variable node.
      * @param n name of variable

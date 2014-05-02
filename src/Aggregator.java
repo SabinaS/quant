@@ -7,6 +7,12 @@ public class Aggregator implements Node{
     String member;
     SymbolRecord symrecord;
     boolean funcRef = false;
+    Variable var;
+
+    public Aggregator(Variable v, SymbolRecord s, String m){
+        var = v; symrecord = s;
+        member = m;
+    }
 
     public Aggregator(String t, String f, int c, SymbolRecord s, boolean ifr){
         ct = c;
@@ -29,7 +35,11 @@ public class Aggregator implements Node{
         String[] translation;
         translation = new String[2];
         translation[0] = Translator.IN_PLACE;
-        if(!funcRef)
+        if(var != null){
+            translation[1] = var.translate()[1]+".rawCt().VALTIMES(factory.new "+symrecord.unitMap.get(var.getName())+"(factory)."+member+")";
+            return translation;
+        }
+	else if(!funcRef)
             translation[1] = "factory.new "+type+"(factory)."+member;
         else{
             DefinedType tobj = symrecord.getTypeObj(type);
@@ -49,7 +59,7 @@ public class Aggregator implements Node{
             }
             translation[1] = tr;
         }
-        translation[1] = "factory.new NUMVAL("+ct+",new UNIT(\"\",factory)).VALTIMES("+translation[1]+")";
+        translation[1] = "factory.new NUMVAL("+ct+",factory.new UNIT(\"\",factory)).VALTIMES("+translation[1]+")";
         return translation;
     
     }

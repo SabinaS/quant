@@ -180,6 +180,7 @@ public class Translator{
                 "        denominator = new ArrayList<String>();\n"+
                 "        if(u!=null)  numerator.add(u);\n"+
                 "        fact = f;}\n"+
+             
                 "    public boolean isType(){\n"+
                 "        if(numerator.size()==0 || numerator.get(0).equals(\"\")){ return false; }\n"+
                 "        try{\n"+
@@ -255,6 +256,9 @@ public class Translator{
             "        if(vu.isType()&&unit.charAt(unit.length()-1)!='s'&&(vi+vr) != 1) unit = unit + \"s\";"+
             "        return (m == 0 ? \"\"+vi : \"\"+vr)" +
             "        +\" \"+unit; }\n"+
+            "    public NUMVAL rawCt(){\n"+
+            "        return new NUMVAL(vi, new UNIT(\"\",vu.fact));\n"+
+            "    }\n"+
             "    public NUMVAL VALPLUS(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+

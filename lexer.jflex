@@ -18,7 +18,6 @@ import java_cup.runtime.*;
 %cup
 %line
 %column
-%debug
 %unicode              /* turn on debugging for now */
 %class QuantLexer
 %{

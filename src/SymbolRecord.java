@@ -41,12 +41,13 @@ public class SymbolRecord{
 
     public ArrayList<DefinedType> objTypes;
     private HashMap<String,DefinedType> typeMap;
+    HashMap<String,String> unitMap;
 
     public SymbolRecord(){
         classRecord = new HashMap<String,Integer>();
         typeRecord = new HashMap<String,String>();
         declarationRecord = new HashMap<String,Integer>();
-
+        unitMap = new HashMap<String,String>();
         objTypes = new ArrayList<DefinedType>();
         typeMap = new HashMap<String,DefinedType>();
     }
