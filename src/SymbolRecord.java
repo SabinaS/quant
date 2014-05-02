@@ -35,7 +35,7 @@ public class SymbolRecord{
     public static int TYPE_DEFINED = -2;
     public static int SUPERTYPE_UNDEFINED = -1;
 
-    private HashMap<String, Integer> classRecord;
+    HashMap<String, Integer> classRecord;
     private HashMap<String, String> typeRecord;
     private HashMap<String, Integer> declarationRecord;
 
@@ -70,6 +70,7 @@ public class SymbolRecord{
     }
 
     public int getClass(String key){
+        if(key == null || !classRecord.containsKey(key)) return 0;
         return classRecord.get(key);
     }
 

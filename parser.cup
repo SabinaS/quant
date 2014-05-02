@@ -9,6 +9,7 @@
 
 import java_cup.runtime.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 action code {:
     public SymbolRecord symrecord = new SymbolRecord();
@@ -72,6 +73,8 @@ terminal HAS;
 terminal WITH;
 terminal HAVING; 
 terminal APO_S;
+terminal TOTAL;
+terminal OF;
 
 terminal String IDENTIFIER;
 terminal String STRING_LITERAL;
@@ -118,6 +121,7 @@ non terminal Node mem_ref;
 non terminal Node ident_chain;   
 non terminal Node obj_func_dec;
 non terminal Node field_expr;
+non terminal Node agg_expr;
 
 precedence left LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
 precedence left AND, OR;
@@ -179,6 +183,27 @@ type_dec	::= type_sig:sig COLON mem_type_chain:mem_chain
 		    |
 		    type_sig:sig
 		    {: RESULT = new TypeDec(sig, null, symrecord); :}
+		    ;
+
+agg_expr	::= TOTAL IDENTIFIER:ident OF quantity:qnt
+		    {:
+                       Quantity q = (Quantity) qnt;
+                       Unit qunit = (Unit) q.unit;
+                       Number qnumber = (Number) q.number;
+                       if(q.unit == null){ System.out.println("Woops! You can't total the "+ident+
+                                              " of a number!"); System.exit(0); }
+                       DefinedType type = symrecord.getTypeObj(qunit.unit);
+                       if(symrecord.getClass(qunit.unit)!=SymbolRecord.TYPE_CLASS || type == null){
+                           System.out.println("Woops!  You can't total the "+ident+" of a unit!");
+                           System.exit(0);
+                       }
+                       if(!type.funcs.contains(ident) && !type.fields.contains(ident)){
+                           System.out.println("Wait a minute... You didn't say that a "+qunit.unit+
+                                               " has " + ident + "!"); System.exit(0);
+                       }
+                       boolean isFunc = type.funcs.contains(ident);
+                       RESULT = new Aggregator(qunit.unit, ident, qnumber.iVal, symrecord, isFunc);
+		    :}
 		    ;
 
 obj_func_dec	::= type_ref:ref APO_S IDENTIFIER:ident IS field_expr:expr
@@ -338,8 +363,11 @@ mem_type	::= IDENTIFIER:ident1 IS type_ref:ref
 		    ;
 
 type_ref	::= A IDENTIFIER:ident1
-		    {: int i = symrecord.setClass(ident1, SymbolRecord.TYPE_CLASS); 
-                       if(i != 0){ identClassError(ident1, SymbolRecord.TYPE_CLASS, i); }
+		    {: int i = symrecord.setClass(ident1, SymbolRecord.TYPE_CLASS);
+                       if(i == SymbolRecord.UNIT_CLASS){ 
+                           symrecord.classRecord.put(ident1,SymbolRecord.TYPE_CLASS);
+                       }
+                       else if(i != 0){ identClassError(ident1, SymbolRecord.TYPE_CLASS, i); }
                        RESULT = new TypeRef(ident1,symrecord); 
                     :}
 		    ;
@@ -689,6 +717,9 @@ expression	::= expression:l PLUS expression:r
 		    expression:l DIVIDE expression:r
 		    {: RESULT = new Expression(l,r, Node.SEM_DIVIDE); :}
 		    |
+                    agg_expr:a
+		    {: RESULT = a; :}
+		    |
 		    value:v
 		    {: RESULT = v; :}
 		    |
@@ -711,28 +742,8 @@ value		::= STRING_LITERAL:s
 
 quantity	::= number:num unit:u
 		    {: 
-                       String unit = ((Unit) u).unit;
-                       if(!symrecord.typeIsDefined(unit) &&
-                                symrecord.typeIsDefined(unit.substring(0,unit.length()-1)))
-                           unit = unit.substring(0,unit.length()-1);
-                      
-                       if(symrecord.typeIsDefined(unit)){
-                           if(((Number) num).getNumCat() == Node.SEM_INT_CONST){
-                               // Treat as collection
-                               if(((Number) num).iVal < 0){
-                                   System.out.println("You can't have less than 0 "+unit+"s!");
-                                   System.exit(0);
-                               }
-                               else{
-                                   RESULT = new Collection(unit,((Number) num).iVal);
-                               }
-                           }
-                           else
-                               RESULT = new Quantity(num, u);
-                       }
-                       else{
-                           RESULT = new Quantity(num, u);
-                       }                       
+                        
+                        RESULT = new Quantity(num, u);                   
                     :}
                     |
 		    number:num
@@ -748,9 +759,21 @@ number		::= INTEGER_LITERAL:num
 
 unit		::= IDENTIFIER:ident
 		    {: 
+                       // If it's an object type...
+                       String[] alt = new String[5];
+                       alt[0] = ident; alt[1] = ident+"s";
+                       alt[2] = ident+"es"; alt[3] = ident.length()>2 ? 
+                                                      ident.substring(0,ident.length()-1) : ident;
+                       alt[4] = ident.length() > 3 ?
+                                  ident.substring(0,ident.length()-2) : ident;
+                       SymbolRecord sr = symrecord;
+                       for(String s : alt){
+                           if(sr.getClass(ident) == 0 && (sr.getClass(s) != 0 || sr.getTypeObj(s) != null))
+                               ident = s;
+                       }
                        int prevClass = 
 			   symrecord.setClass(ident, SymbolRecord.UNIT_CLASS);
-                       if(prevClass != 0)
+                       if(prevClass != 0 && prevClass != SymbolRecord.TYPE_CLASS)
 		           identClassError(ident, SymbolRecord.UNIT_CLASS, 
 	 	               prevClass);
 		       RESULT = new Unit(ident);

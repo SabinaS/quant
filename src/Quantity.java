@@ -7,8 +7,8 @@
 
 public class Quantity implements Node{
     
-    private Node number;
-    private Node unit;
+    Node number;
+    Node unit;
 
     /**
      * Constructs a quantity with a given

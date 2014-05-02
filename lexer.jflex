@@ -50,7 +50,7 @@ rat_num		= ( [\-])?[0-9]+\.[0-9]+
 
 plus      = (\+|Plus|plus)
 minus		  = (\-|Minus|minus)
-times		  = (\*|Times|times)
+times		  = (\*|Times|times|multiplied by )
 divide		= (\/|divided by|over)
 and		    = (\&\&|and)
 or		    = (\|\||or)
@@ -62,6 +62,8 @@ period		= \.
 lparen		= \(
 rparen		= \)
 
+total		  = (total)
+of		  = (of)
 its		  = (Its |its |his |her )
 a		  = (a |A |an |An )
 is		    = (is)
@@ -105,6 +107,8 @@ identifier	   = [A-Za-z]+
 {times}		    { return getSymbol(sym.TIMES); }
 {divide}	    { return getSymbol(sym.DIVIDE); }
 {its}		    { return getSymbol(sym.ITS); }
+{total}		    { return getSymbol(sym.TOTAL); }
+{of}		    { return getSymbol(sym.OF); }
 {if}		      { return getSymbol(sym.IF); }
 {then}		    { return getSymbol(sym.THEN); }
 {else}		    { return getSymbol(sym.ELSE); }

@@ -96,7 +96,7 @@ public class Translator{
                 String fType = type.fieldTypes.get(j);
                 if(fType.equals("NUMVAL")){
                     typeBlock+="public NUMVAL total"+type.fields.get(j)+"(){\n"+
-                               "    NUMVAL tot = new NUMVAL(0, new UNIT(\"\",factory);\n"+
+                               "    NUMVAL tot = new NUMVAL(0, new UNIT(\"\",factory));\n"+
                                "    for(int i = 0; i < col.size(); i++){\n"+
                                "        tot.VALPLUS(col.get(i)."+type.fields.get(j)+");\n}\n"+
                                "    return tot;\n"+
@@ -180,6 +180,12 @@ public class Translator{
                 "        denominator = new ArrayList<String>();\n"+
                 "        if(u!=null)  numerator.add(u);\n"+
                 "        fact = f;}\n"+
+                "    public boolean isType(){\n"+
+                "        if(numerator.size()==0 || numerator.get(0).equals(\"\")){ return false; }\n"+
+                "        try{\n"+
+                "            Class.forName(\""+pname+"$\"+numerator.get(0));\n"+
+                "            return true;\n"+
+                "        } catch(Exception e){ return false; }}\n"+
                 "    public UNIT mult(UNIT u){\n"+
                 "        UNIT nu = new UNIT(null,fact);\n"+
                 "        for(String s : numerator){ if(s.length() > 0) nu.numerator.add(s); }\n"+
@@ -245,8 +251,10 @@ public class Translator{
             "    public NUMVAL(int v, UNIT u){ vi = v; m = 0; vu = u;}\n"+
             "    public NUMVAL(double v, UNIT u){ vr = v; m = 1; vu = u;}\n"+
             "    public String toString(){"+
+            "        String unit = vu.toString();\n"+
+            "        if(vu.isType()&&unit.charAt(unit.length()-1)!='s'&&(vi+vr) != 1) unit = unit + \"s\";"+
             "        return (m == 0 ? \"\"+vi : \"\"+vr)" +
-            "        +\" \"+vu.toString(); }\n"+
+            "        +\" \"+unit; }\n"+
             "    public NUMVAL VALPLUS(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
             "        double nv = n.vi + n.vr;\n"+
@@ -269,6 +277,7 @@ public class Translator{
     	    "        }\n"+
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
             "        double nr = tv-nv*mult;\n"+
+            "        if(nr < 0 && vu.isType()) nr = 0;\n"+
             "        UNIT ur = vu;\n"+
             "        if(nm == 0) return new NUMVAL((int) nr, ur);\n"+
             "        else return new NUMVAL(nr,ur);\n"+
