@@ -20,7 +20,7 @@ action code {:
         System.exit(0);
     }
     public void notDefinedError(String identifier){
-        System.out.println("Wait a second!  What's a '"+identifier+"'?");
+        System.out.println("Wait a second!  What's a '"+identifier.replace("_"," ")+"'?");
         System.exit(0);
     }
     public void typeMismatch(String type, String field, String expected, String found){
@@ -898,13 +898,13 @@ line_terminator ::= PERIOD
 
 complex_id	::= IDENTIFIER:i
 		    {: ComplexIdentifier id = new ComplexIdentifier();
-		       id.id = i;
+		       id.id = i.toLowerCase();
                        RESULT = id;
 		    :}
 		    |
 		    complex_id:c IDENTIFIER:i
 		    {:
-		       c.id+="_"+i;
+		       c.id+="_"+i.toLowerCase();
 		       RESULT = c;
 		    :}
 		    ;
