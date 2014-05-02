@@ -9,7 +9,11 @@ cuprt = ./lib/java-cup-11b-runtime.jar
 home = ./
 src = ./src/*
 
-.PHONY: lexer
+
+jar: lexparse compiler
+	jar cvfm exe/QuantCompiler.jar exe/manifest.txt *.class 
+	make clean
+
 lexparse:
 	java -jar $(cup) -expect 1 -nopositions -nowarn parser.cup
 	java -jar $(jflex) lexer.jflex
