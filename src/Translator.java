@@ -75,6 +75,27 @@ public class Translator{
                 }
             } 
             typeBlock+= "}\n";
+            typeBlock += "public String toString(){\n";
+            if(type.fields.size() == 0){
+                typeBlock += "String str = \"A "+type.typeName+".\"; return str;";
+            }  if(type.fields.size() == 1){
+                typeBlock += "String str = \"A "+type.typeName+" having "+type.fields.get(0)+
+                                 " = \"+"+type.fields.get(0)+".toString()+\".\"; return str;";
+            }  else if(type.fields.size() == 2){
+                typeBlock += "String str = \"A "+type.typeName+" having "+type.fields.get(0)+
+                                 " = \"+"+type.fields.get(0)+".toString()+\" and "+
+                                 type.fields.get(1)+" = \"+"+type.fields.get(1)+".toString()+\".\"; return str;";
+            }  else{
+                typeBlock += "String str = \"A "+type.typeName+" having ";
+                for(int j = 0; j < type.fields.size()-1; j++){
+                    typeBlock += type.fields.get(j)+" = \"+"+type.fields.get(j)+".toString()+\", ";
+                }
+                int j = type.fields.size()-1;
+                typeBlock += "and "+type.fields.get(j)+" = \"+"+type.fields.get(j)+".toString()+\".\";";
+                typeBlock += " return str.replace(\"_\",\" \");";
+            }
+            typeBlock += "}\n";
+
             for(int j = 0; j < type.fields.size(); j++){
                 typeBlock+="\tpublic "+type.fieldTypes.get(j)+" "+
                                type.fields.get(j) +";\n";
@@ -254,8 +275,8 @@ public class Translator{
             "    public String toString(){"+
             "        String unit = vu.toString();\n"+
             "        if(vu.isType()&&unit.charAt(unit.length()-1)!='s'&&(vi+vr) != 1) unit = unit + \"s\";"+
-            "        return (m == 0 ? \"\"+vi : \"\"+vr)" +
-            "        +\" \"+unit; }\n"+
+            "        return ((m == 0 ? \"\"+vi : \"\"+vr)" +
+            "        +\" \"+unit).replace(\"_\",\" \"); }\n"+
             "    public NUMVAL rawCt(){\n"+
             "        return new NUMVAL(vi, new UNIT(\"\",vu.fact));\n"+
             "    }\n"+

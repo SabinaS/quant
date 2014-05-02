@@ -75,6 +75,8 @@ terminal HAVING;
 terminal APO_S;
 terminal TOTAL;
 terminal OF;
+terminal WHAT;
+terminal IS_C;
 
 terminal String IDENTIFIER;
 terminal String STRING_LITERAL;
@@ -83,7 +85,7 @@ terminal Double RATIONAL_LITERAL;
 
 terminal LPAREN, RPAREN;
 terminal PLUS, MINUS, TIMES, DIVIDE;
-terminal PERIOD, COLON, SEMICOLON;
+terminal PERIOD, COLON, SEMICOLON, QMARK;
 terminal CONNECTOR;
 terminal INVALID;
 
@@ -122,6 +124,8 @@ non terminal Node ident_chain;
 non terminal Node obj_func_dec;
 non terminal Node field_expr;
 non terminal Node agg_expr;
+non terminal Node is_cond;
+non terminal ComplexIdentifier complex_id;
 
 precedence left LESS_THAN, GREATER_THAN, EQUAL_TO, NEQUAL_TO;
 precedence left AND, OR;
@@ -150,6 +154,9 @@ line		::= statement:stmt line_terminator:lt
                     |
                     type_dec:td line_terminator:lt
                     {: RESULT = new Line(td,lt); :}
+                    |
+                    is_cond:ic
+		    {: RESULT = ic; :}
                     |
                     cond_block:cb
 		    {: RESULT = cb; :}
@@ -185,42 +192,44 @@ type_dec	::= type_sig:sig COLON mem_type_chain:mem_chain
 		    {: RESULT = new TypeDec(sig, null, symrecord); :}
 		    ;
 
-agg_expr	::= TOTAL IDENTIFIER:ident OF quantity:qnt
+agg_expr	::= TOTAL complex_id:id OF quantity:qnt
 		    {:
                        Quantity q = (Quantity) qnt;
                        Unit qunit = (Unit) q.unit;
                        Number qnumber = (Number) q.number;
-                       if(q.unit == null){ System.out.println("Woops! You can't total the "+ident+
+                       if(q.unit == null){ System.out.println("Woops! You can't total the "+
+                                              id.id.replace("_"," ") +
                                               " of a number!"); System.exit(0); }
                        DefinedType type = symrecord.getTypeObj(qunit.unit);
                        if(symrecord.getClass(qunit.unit)!=SymbolRecord.TYPE_CLASS || type == null){
-                           System.out.println("Woops!  You can't total the "+ident+" of a unit!");
+                           System.out.println("Woops!  You can't total the "+id.id.replace("_"," ")+
+                                                " of a unit!");
                            System.exit(0);
                        }
-                       if(!type.funcs.contains(ident) && !type.fields.contains(ident)){
+                       if(!type.funcs.contains(id.id) && !type.fields.contains(id.id)){
                            System.out.println("Wait a minute... You didn't say that a "+qunit.unit+
-                                               " has " + ident + "!"); System.exit(0);
+                                               " has " + id.natural() + "!"); System.exit(0);
                        }
-                       boolean isFunc = type.funcs.contains(ident);
-                       RESULT = new Aggregator(qunit.unit, ident, qnumber.iVal, symrecord, isFunc);
+                       boolean isFunc = type.funcs.contains(id.id);
+                       RESULT = new Aggregator(qunit.unit, id.id, qnumber.iVal, symrecord, isFunc);
 		    :}
 		    |
-                    TOTAL IDENTIFIER:ident OF field:f 
+                    TOTAL complex_id:id OF field:f 
                     {:
                         if(!symrecord.getType(((Variable) f).getName()).equals("NUMVAL")){
                             System.out.println("You can't find a total on "+((Variable) f).getName());
                             System.exit(0);
                         }
-                       RESULT = new Aggregator(((Variable) f),symrecord,ident);
+                       RESULT = new Aggregator(((Variable) f),symrecord,id.id);
 		    :}
 		    ;
 
-obj_func_dec	::= type_ref:ref APO_S IDENTIFIER:ident IS field_expr:expr
+obj_func_dec	::= type_ref:ref APO_S complex_id:id IS field_expr:expr
 		    {:
                        TypeRef tref = (TypeRef) ref;
                        FieldExpression fexpr = (FieldExpression) expr;
 
-                       String func = ident;
+                       String func = id.id;
                        ArrayList<String> parts = fexpr.getParts();
                        symrecord.getTypeObj(tref.getType()).addFunc(func,parts);
 
@@ -319,51 +328,51 @@ mem_type_chain  ::= mem_type_chain:mem_type AND mem_type:mem_type1
 		    {: RESULT = new MemTypeChain(mem); :}
 		    ;
 
-mem_type	::= IDENTIFIER:ident1 IS type_ref:ref
+mem_type	::= complex_id:id IS type_ref:ref
 		    {:
                         String type = ((TypeRef) ref).getType();
                         if(!symrecord.typeIsDefined(type)){
-                            typeDefError(ident1,null,10);
+                            typeDefError(id.natural(),null,10);
                         }
-                        RESULT = new MemberType(ident1, type, "" , symrecord);
+                        RESULT = new MemberType(id.id, type, "" , symrecord);
                     :}
 		    |
-		    IDENTIFIER:ident2 IS expression:expr
+		    complex_id:id IS expression:expr
 		    {:
                         if(expr.getSemanticRepresentation().equals("STRING")){
-                            RESULT = new MemberType(ident2,"String", expr.translate()[1], symrecord);
+                            RESULT = new MemberType(id.id,"String", expr.translate()[1], symrecord);
                         } else{
                             String trans = expr.translate()[1];
                             if(expr.getSemanticRepresentation().equals(""))
-                            	RESULT = new MemberType(ident2,"NUMVAL",trans,symrecord);
+                            	RESULT = new MemberType(id.id,"NUMVAL",trans,symrecord);
                             else{
                                 String t = expr.getSemanticRepresentation();
-                                RESULT = new MemberType(ident2,expr.getSemanticRepresentation(),
+                                RESULT = new MemberType(id.id,expr.getSemanticRepresentation(),
                                                 trans,symrecord);
                             }
                         } 
                     :}
                     |
-		    ITS IDENTIFIER:ident1 IS type_ref:ref
+		    ITS complex_id:id IS type_ref:ref
 		    {:
                         String type = ((TypeRef) ref).getType();
                         if(!symrecord.typeIsDefined(type)){
-                            typeDefError(ident1,null,10);
+                            typeDefError(id.natural(),null,10);
                         }
-                        RESULT = new MemberType(ident1, type, "" , symrecord);
+                        RESULT = new MemberType(id.id, type, "" , symrecord);
                     :}
 		    |
-		    ITS IDENTIFIER:ident2 IS expression:expr
+		    ITS complex_id:id IS expression:expr
 		    {:
                         if(expr.getSemanticRepresentation().equals("STRING")){
-                            RESULT = new MemberType(ident2,"String", expr.translate()[1], symrecord);
+                            RESULT = new MemberType(id.id,"String", expr.translate()[1], symrecord);
                         } else{
                             String trans = expr.translate()[1];
                             if(expr.getSemanticRepresentation().equals(""))
-                            	RESULT = new MemberType(ident2,"NUMVAL",trans,symrecord);
+                            	RESULT = new MemberType(id.id,"NUMVAL",trans,symrecord);
                             else{
                                 String t = expr.getSemanticRepresentation();
-                                RESULT = new MemberType(ident2,expr.getSemanticRepresentation(),
+                                RESULT = new MemberType(id.id,expr.getSemanticRepresentation(),
                                                 trans,symrecord);
                             }
                         } 
@@ -371,49 +380,49 @@ mem_type	::= IDENTIFIER:ident1 IS type_ref:ref
 
 		    ;
 
-type_ref	::= A IDENTIFIER:ident1
-		    {: int i = symrecord.setClass(ident1, SymbolRecord.TYPE_CLASS);
+type_ref	::= A complex_id:id
+		    {: int i = symrecord.setClass(id.id, SymbolRecord.TYPE_CLASS);
                        if(i == SymbolRecord.UNIT_CLASS){ 
-                           symrecord.classRecord.put(ident1,SymbolRecord.TYPE_CLASS);
+                           symrecord.classRecord.put(id.id,SymbolRecord.TYPE_CLASS);
                        }
-                       else if(i != 0){ identClassError(ident1, SymbolRecord.TYPE_CLASS, i); }
-                       RESULT = new TypeRef(ident1,symrecord); 
+                       else if(i != 0){ identClassError(id.natural(), SymbolRecord.TYPE_CLASS, i); }
+                       RESULT = new TypeRef(id.id,symrecord); 
                     :}
 		    ;
 
-ident_chain  	::= IDENTIFIER:ident1
-		    {: RESULT = new IdentifierChain(ident1); :}
+ident_chain  	::= complex_id:id
+		    {: RESULT = new IdentifierChain(id.id); :}
 		    |
-		    ident_chain:ident2 AND IDENTIFIER:ident3
-		    {: ((IdentifierChain) ident2).addIdentifier(ident3); 
+		    ident_chain:ident2 AND complex_id:id
+		    {: ((IdentifierChain) ident2).addIdentifier(id.id); 
                        RESULT = ident2;
                     :}
 		    |
-		    ident_chain:ident4 CONNECTOR IDENTIFIER:ident5
-		    {: ((IdentifierChain) ident4).addIdentifier(ident5); 
+		    ident_chain:ident4 CONNECTOR complex_id:id
+		    {: ((IdentifierChain) ident4).addIdentifier(id.id); 
                        RESULT = ident4;
                     :} 
 		    |
-		    ident_chain:ident6 CONNECTOR AND IDENTIFIER:ident7 
-		    {: ((IdentifierChain) ident6).addIdentifier(ident7); 
+		    ident_chain:ident6 CONNECTOR AND complex_id:id 
+		    {: ((IdentifierChain) ident6).addIdentifier(id.id); 
                        RESULT = ident6;
                     :}
 		    |
-		    A IDENTIFIER:ident1
-		    {: RESULT = new IdentifierChain(ident1); :}
+		    A complex_id:id
+		    {: RESULT = new IdentifierChain(id.id); :}
 		    |
-		    ident_chain:ident2 AND A IDENTIFIER:ident3
-		    {: ((IdentifierChain) ident2).addIdentifier(ident3); 
+		    ident_chain:ident2 AND A complex_id:id
+		    {: ((IdentifierChain) ident2).addIdentifier(id.id); 
                        RESULT = ident2;
                     :}
 		    |
-		    ident_chain:ident4 CONNECTOR A IDENTIFIER:ident5
-		    {: ((IdentifierChain) ident4).addIdentifier(ident5); 
+		    ident_chain:ident4 CONNECTOR A complex_id:id
+		    {: ((IdentifierChain) ident4).addIdentifier(id.id); 
                        RESULT = ident4;
                     :} 
 		    |
-		    ident_chain:ident6 CONNECTOR AND A IDENTIFIER:ident7 
-		    {: ((IdentifierChain) ident6).addIdentifier(ident7); 
+		    ident_chain:ident6 CONNECTOR AND A complex_id:id
+		    {: ((IdentifierChain) ident6).addIdentifier(id.id); 
                        RESULT = ident6;
                     :}
 
@@ -467,6 +476,11 @@ cond_block	::= if_then_else:i
 		    |
 		    while:w
 		    {: RESULT = w; :}
+                    
+		    ;
+
+is_cond		::= IS_C bool_exp:b QMARK
+		    {: RESULT = new IsCondition(b); :}
 		    ;
 
 if_then_else	::= IF bool_seq:cond CONNECTOR THEN stmt_sequence:t_seq 
@@ -560,7 +574,26 @@ bool_exp	::= expression:l LESS_THAN expression:r
 		    {: RESULT = new BooleanExpression(l,r,
 		           Node.SEM_NEQUAL_TO);
 		    :}
-
+		    |
+                    expression:l LESS_THAN THAN expression:r
+		    {: RESULT = new BooleanExpression(l,r, Node.SEM_LESS_THAN);
+                       System.out.println("boolexp found");
+		    :}
+		    |
+		    expression:l GREATER_THAN THAN expression:r
+		    {: RESULT = new BooleanExpression(l,r, 
+                           Node.SEM_GREATER_THAN);
+		    :}
+		    |
+		    expression:l EQUAL_TO TO expression:r
+		    {: RESULT = new BooleanExpression(l,r,
+		           Node.SEM_EQUAL_TO);
+		    :}
+		    |
+		    expression:l NOT EQUAL_TO TO expression:r
+		    {: RESULT = new BooleanExpression(l,r,
+		           Node.SEM_NEQUAL_TO);
+		    :}
 	            ;
 
 asmt_statement	::= field:f IS expression:v
@@ -594,7 +627,8 @@ asmt_statement	::= field:f IS expression:v
                          
                            if(vv.wrappedValue.getClass().getName().equals("Quantity")){
                                Quantity vq = (Quantity) vv.wrappedValue;
-                               symrecord.unitMap.put(((Variable) f).getName(),((Unit)vq.unit).unit);
+                               if(vq.unit != null)
+                                   symrecord.unitMap.put(((Variable) f).getName(),((Unit)vq.unit).unit);
                            }
                        }
 		       RESULT = new AssignmentStatement(f,v,
@@ -678,6 +712,9 @@ asmt_statement	::= field:f IS expression:v
 
 optv_statement	::= operative_kwd:kwd expression:e
 		    {: RESULT = new OperativeStatement(kwd, e); :}
+                    |
+		    WHAT IS expression:e
+                    {: RESULT = new OperativeStatement(new OperativeKeyword(Node.SEM_PRINT_KWD), e); :}
 		    ;
 
 operative_kwd	::= PRINT
@@ -694,14 +731,14 @@ field_expr	::= STRING_LITERAL:s
                        RESULT = new FieldExpression(q,null,-1);
                     :}
                     |
-                    IDENTIFIER:ident
+                    complex_id:id
                     {:
-                       RESULT = new FieldExpression(ident);
+                       RESULT = new FieldExpression(id.id);
                     :}
 		    |
-		    ITS IDENTIFIER:ident
+		    ITS complex_id:id
                     {:
-                       RESULT = new FieldExpression(ident);
+                       RESULT = new FieldExpression(id.id);
 		    :}
 		    |
 		    field_expr:l PLUS field_expr:r
@@ -782,37 +819,37 @@ number		::= INTEGER_LITERAL:num
 		    {: RESULT = new Number(num); :}
 		    ;
 
-unit		::= IDENTIFIER:ident
+unit		::= complex_id:id
 		    {: 
                        // If it's an object type...
                        String[] alt = new String[5];
-                       alt[0] = ident; alt[1] = ident+"s";
-                       alt[2] = ident+"es"; alt[3] = ident.length()>2 ? 
-                                                      ident.substring(0,ident.length()-1) : ident;
-                       alt[4] = ident.length() > 3 ?
-                                  ident.substring(0,ident.length()-2) : ident;
+                       alt[0] = id.id; alt[1] = id.id+"s";
+                       alt[2] = id.id+"es"; alt[3] = id.id.length()>2 ? 
+                                                      id.id.substring(0,id.id.length()-1) : id.id;
+                       alt[4] = id.id.length() > 3 ?
+                                  id.id.substring(0,id.id.length()-2) : id.id;
                        SymbolRecord sr = symrecord;
                        for(String s : alt){
-                           if(sr.getClass(ident) == 0 && (sr.getClass(s) != 0 || sr.getTypeObj(s) != null))
-                               ident = s;
+                           if(sr.getClass(id.id) == 0 && (sr.getClass(s) != 0 || sr.getTypeObj(s) != null))
+                               id.id = s;
                        }
                        int prevClass = 
-			   symrecord.setClass(ident, SymbolRecord.UNIT_CLASS);
+			   symrecord.setClass(id.id, SymbolRecord.UNIT_CLASS);
                        if(prevClass != 0 && prevClass != SymbolRecord.TYPE_CLASS)
-		           identClassError(ident, SymbolRecord.UNIT_CLASS, 
+		           identClassError(id.natural(), SymbolRecord.UNIT_CLASS, 
 	 	               prevClass);
-		       RESULT = new Unit(ident);
+		       RESULT = new Unit(id.id);
                      :}
 		     ;
 
-field		::= IDENTIFIER:ident
+field		::= complex_id:id
 		    {:
 		       int prevClass = 
-		        symrecord.setClass(ident, SymbolRecord.VARIABLE_CLASS);
+		        symrecord.setClass(id.id, SymbolRecord.VARIABLE_CLASS);
 		       if(prevClass != 0)
-		           identClassError(ident, SymbolRecord.VARIABLE_CLASS,
+		           identClassError(id.natural(), SymbolRecord.VARIABLE_CLASS,
 		               prevClass);
-		       RESULT = new Variable(ident, symrecord);
+		       RESULT = new Variable(id.id, symrecord);
 		    :}
 		    |
                     mem_ref:mem
@@ -825,28 +862,28 @@ field		::= IDENTIFIER:ident
                     :}
 		    ;
 
-mem_ref		::= field:ident1 APO_S IDENTIFIER:ident2
+mem_ref		::= field:ident1 APO_S complex_id:id
 		    {:
                         String type = symrecord.getType(((Variable) ident1).getName());
                         String mType = "";
                         boolean isFunc = false;
                         DefinedType typeObj = symrecord.getTypeObj(type);
-                        if(typeObj==null||(!typeObj.fields.contains(ident2) && 
-                                !typeObj.funcs.contains(ident2)))
-                            typeMembError(((Variable) ident1).getName(), ident2);
-                        else if(typeObj.funcs.contains(ident2)){
-                            int index = typeObj.funcs.indexOf(ident2);
-                            typeObj.popFunc(ident2);
+                        if(typeObj==null||(!typeObj.fields.contains(id.id) && 
+                                !typeObj.funcs.contains(id.id)))
+                            typeMembError(((Variable) ident1).getName(), id.natural());
+                        else if(typeObj.funcs.contains(id.id)){
+                            int index = typeObj.funcs.indexOf(id.id);
+                            typeObj.popFunc(id.id);
                             mType = typeObj.funcTypes.get(index);
                             if(mType.equals("NONE")) mType = "STRING";
                             isFunc = true;
                         }
                         else
-                            mType = typeObj.fieldTypes.get(typeObj.fields.indexOf(ident2));
+                            mType = typeObj.fieldTypes.get(typeObj.fields.indexOf(id.id));
                         
-                        symrecord.setType(((Variable) ident1).getName()+"."+ident2, mType);
+                        symrecord.setType(((Variable) ident1).getName()+"."+id.id, mType);
                         
-                        MemberRef ref = new MemberRef(ident1, ident2, mType, symrecord);
+                        MemberRef ref = new MemberRef(ident1, id.id, mType, symrecord);
                         ref.funcRef = isFunc;    
                         RESULT = ref;
                     :}
@@ -854,4 +891,20 @@ mem_ref		::= field:ident1 APO_S IDENTIFIER:ident2
 
 line_terminator ::= PERIOD
 		    {: RESULT = new Terminator(Node.IMP_TERM); :}
+		    |
+                    QMARK
+		    {: RESULT = new Terminator(Node.IMP_TERM); :}
+		    ;
+
+complex_id	::= IDENTIFIER:i
+		    {: ComplexIdentifier id = new ComplexIdentifier();
+		       id.id = i;
+                       RESULT = id;
+		    :}
+		    |
+		    complex_id:c IDENTIFIER:i
+		    {:
+		       c.id+="_"+i;
+		       RESULT = c;
+		    :}
 		    ;

@@ -60,12 +60,16 @@ colon		  = (\:|\-\-)
 period		= \.
 lparen		= \(
 rparen		= \)
+qmark	        = \?
+
+what		  = (What|what)
 
 total		  = (total)
 of		  = (of)
 its		  = (Its |its |his |her )
 a		  = (a |A |an |An )
 is		    = (is)
+is_c		  = (Is)
 are		  = (are)
 if		    = (if|If)
 then		  = (then|Then)
@@ -75,8 +79,8 @@ print		  = (print |Print )
 set		    = (Set |set )
 to		    = ( to )
 than		  = (than)
-less_than	= (\<|less )
-greater_than	 = (\>|greater )
+less_than	= (\<|less |smaller )
+greater_than	 = (\>|greater |more |bigger )
 equal_to	     = (\=|equals |equal )
 nequal_to	     = (\!\=)
 not		         = (not)
@@ -111,6 +115,7 @@ identifier	   = [A-Za-z]+
 {if}		      { return getSymbol(sym.IF); }
 {then}		    { return getSymbol(sym.THEN); }
 {else}		    { return getSymbol(sym.ELSE); }
+{what}		    { return getSymbol(sym.WHAT); }
 {while}		    { return getSymbol(sym.WHILE); }
 {less_than}	  { return getSymbol(sym.LESS_THAN); }
 {greater_than} { return getSymbol(sym.GREATER_THAN); }
@@ -119,6 +124,7 @@ identifier	   = [A-Za-z]+
 {string}	    { return getSymbol(sym.STRING_LITERAL, yytext()); }
 {print}		    { return getSymbol(sym.PRINT); }
 {is}		      { return getSymbol(sym.IS); }
+{is_c}		      { return getSymbol(sym.IS_C); }
 {in}		      { return getSymbol(sym.IN); }
 {a}		    { return getSymbol(sym.A); }
 {has}		    { return getSymbol(sym.HAS); }
@@ -141,6 +147,7 @@ identifier	   = [A-Za-z]+
 {every}		    { return getSymbol(sym.EVERY); }
 {apo_s}		    { return getSymbol(sym.APO_S); }
 {period}	    { return getSymbol(sym.PERIOD); }
+{qmark}		    { return getSymbol(sym.QMARK); }
 {whitespace}  { /* Ignore. */ }
 {comment}	{ /* Ignore */ }
 {identifier}	{ // Will need to add symbol table management.
