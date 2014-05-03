@@ -43,9 +43,20 @@ public class Compiler {
 
             Process p = Runtime.getRuntime().exec("javac "+intermediateFile);
             p.waitFor(); // Wait for the process to terminate
-
+            String command = "jar cfve "+target+".fun "+target+" "+target+".class *.class";
+            Process p2 = Runtime.getRuntime().exec(command);
+            p2.waitFor();
+            // delete the class files
+            File dir = new File(System.getProperty("user.dir"));
+            if(dir.isDirectory()){
+                String[] flist = dir.list();
+                for(String s : flist){
+                    if(s.contains(".class"))
+                        new File(s).delete();
+                }
+            }
             File file = new File(intermediateFile);
-            //file.delete();
+            file.delete();
         } catch(Exception e){ e.printStackTrace(); }
     }
 }

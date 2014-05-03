@@ -5,10 +5,16 @@
 If developing at the command line on a
 UNIX system:
 
+To build: 
 1.  From top-level directory, run make jar.
-2.  cd into /exe
-3.  run ./compile [file]
-4.  win
+
+To compile:
+1.  cd into /exe (if with development distrib.)
+2.  ./compile [.qnt files]
+        [output is a .fun file]  
+
+To run:
+1. ./run [.fun file]
 
 (--Aubrey)
 
