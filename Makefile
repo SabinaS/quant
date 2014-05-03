@@ -11,7 +11,9 @@ src = ./src/*
 
 
 jar: lexparse compiler
-	jar cvfm exe/QuantCompiler.jar exe/manifest.txt *.class 
+	cp *.class ./exe
+	jar cvfe exe/QuantCompiler.jar Compiler -C exe *.class exe/java_cup/runtime/*.class 
+	rm exe/*.class
 	make clean
 
 lexparse:
