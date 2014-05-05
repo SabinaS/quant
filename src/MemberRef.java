@@ -40,7 +40,6 @@ public class MemberRef implements Node{
         else{
             String ttype = symrecord.getType(((Variable) objIdent).getName());
             DefinedType tobj = symrecord.getTypeObj(ttype);
-            System.out.println(type);
             int index = tobj.funcs.indexOf(member);
             String tr = "";
             String pref = ((Variable) objIdent).getName() + ".";

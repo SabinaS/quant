@@ -1,6 +1,7 @@
 import java.io.*;
 import java_cup.runtime.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 /**
  * WIP Compiler for Quant.
  * (Currently just attempts to generate
@@ -16,11 +17,27 @@ public class Compiler {
         Node ASTRoot = null;
         Translator translator;
 
+        String linked = "";
+        try{
+            Scanner loader;
+            for(int i = 1; i < args.length; i++){
+                loader = new Scanner(new File(args[i]));
+                while(loader.hasNextLine()){
+                    linked = linked+loader.nextLine() + "\n";
+                }
+            }
+            loader = new Scanner(new File(args[0]));
+            while(loader.hasNextLine()){ 
+                linked = linked+loader.nextLine() + "\n";
+            }
+        } catch(Exception e) {}
+
         // Use our constructed parser to construct
         // and return the head of our AST.
         try {
             parser qParser = new parser (
-                new QuantLexer(new FileReader(args[0])));
+                new QuantLexer(
+                    new ByteArrayInputStream(linked.getBytes("UTF-8"))));
             //qParser.debug_parse();
             ASTRoot = (Node) qParser.parse().value;
         }

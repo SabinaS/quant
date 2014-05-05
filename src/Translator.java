@@ -290,8 +290,7 @@ public class Translator{
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
             "        double nr = tv+nv*mult;\n; "+
             "        UNIT ur = vu;\n"+
-            "        if(nm == 0) return new NUMVAL((int) nr,ur);\n"+
-            "        else return new NUMVAL(nr, ur);\n"+
+            "        return new NUMVAL(nr, ur);\n"+
             "    }\n"+
             "    public NUMVAL VALMINUS(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
@@ -304,8 +303,7 @@ public class Translator{
             "        double nr = tv-nv*mult;\n"+
             "        if(nr < 0 && vu.isType()) nr = 0;\n"+
             "        UNIT ur = vu;\n"+
-            "        if(nm == 0) return new NUMVAL((int) nr, ur);\n"+
-            "        else return new NUMVAL(nr,ur);\n"+
+            "        return new NUMVAL(nr,ur);\n"+
             "    }\n"+
             "    public NUMVAL VALTIMES(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
@@ -313,8 +311,7 @@ public class Translator{
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
             "        double rate = vu.fact.findRate(vu.toString(),n.vu.toString());\n"+
             "        UNIT ur = rate == 1 ? vu.mult(n.vu) : vu.mult(vu);"+
-            "        if(nm == 0) return new NUMVAL((int)(tv*nv*rate), ur);\n"+
-            "        else return new NUMVAL(tv*nv*rate,ur);\n"+
+            "        return new NUMVAL(tv*nv*rate,ur);\n"+
             "    }\n"+
             "    public NUMVAL VALDIVIDE(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+
@@ -322,8 +319,7 @@ public class Translator{
             "        int nm = n.m == 0 && m==0 ? 0 : 1;\n"+
             "        double rate = vu.fact.findRate(vu.toString(),n.vu.toString());\n"+
             "        UNIT ur = rate == 1 ? vu.div(n.vu) : vu.div(vu);"+
-            "        if(nm == 0) return new NUMVAL((int)(tv/(nv*rate)), ur);\n"+
-            "        else return new NUMVAL(tv/(nv*rate), ur);\n"+
+            "        return new NUMVAL(tv/(nv*rate), ur);\n"+
             "    }\n"+
             "    public boolean VALLT(NUMVAL n){\n"+
             "        double tv = vi + vr;\n"+

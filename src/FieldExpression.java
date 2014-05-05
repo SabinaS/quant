@@ -25,18 +25,21 @@ public class FieldExpression implements Node{
               l.getClass().getName().equals("Quantity")){
             parts.add(l.translate()[1]);
         }
+        else{
+            ArrayList<String> lparts = ((FieldExpression) l).getParts();
         
-        ArrayList<String> lparts = ((FieldExpression) l).getParts();
+            for(int i = 0; i < lparts.size(); i++)
+                parts.add(lparts.get(i));
+        }        
+        if(operation != -1){
+            parts.add(opMap[operation]);
+
+            ArrayList<String> rparts = ((FieldExpression) r).getParts();
         
-        for(int i = 0; i < lparts.size(); i++)
-            parts.add(lparts.get(i));
-        
-        parts.add(opMap[operation]);
-        
-        ArrayList<String> rparts = ((FieldExpression) r).getParts();
-        
-        for(int i = 0; i < rparts.size(); i++)
-            parts.add(rparts.get(i));
+            for(int i = 0; i < rparts.size(); i++)
+                parts.add(rparts.get(i));
+        }
+
         return parts;
     }  
     public void addChild(Node n){
