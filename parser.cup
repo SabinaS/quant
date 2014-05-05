@@ -50,6 +50,13 @@ action code {:
 :}
 
 parser code {:
+
+public void syntax_error(Symbol cur_token){
+    System.out.println("Woops!  Can't understand what you're trying to do "+
+                       "at line "+(cur_token.left+1)+"!  Check your code!");
+    System.exit(0);
+}
+
 :}
 
 /*
@@ -513,7 +520,7 @@ while		::= WHILE bool_seq:cond CONNECTOR stmt_sequence:t_seq PERIOD
 		    ;
 
 bool_seq	::= bool_exp:exp
-		    {:  System.out.println("bool seq found");
+		    {:  
                         RESULT = new BooleanSequence(exp,null,-1); 
                     :}
 		    |
@@ -531,7 +538,6 @@ bool_seq	::= bool_exp:exp
 
 bool_exp	::= expression:l LESS_THAN expression:r
 		    {: RESULT = new BooleanExpression(l,r, Node.SEM_LESS_THAN);
-                       System.out.println("boolexp found");
 		    :}
 		    |
 		    expression:l GREATER_THAN expression:r
@@ -557,7 +563,6 @@ bool_exp	::= expression:l LESS_THAN expression:r
 		    |
                     expression:l IS LESS_THAN THAN expression:r
 		    {: RESULT = new BooleanExpression(l,r, Node.SEM_LESS_THAN);
-                       System.out.println("boolexp found");
 		    :}
 		    |
 		    expression:l IS GREATER_THAN THAN expression:r
@@ -577,7 +582,6 @@ bool_exp	::= expression:l LESS_THAN expression:r
 		    |
                     expression:l LESS_THAN THAN expression:r
 		    {: RESULT = new BooleanExpression(l,r, Node.SEM_LESS_THAN);
-                       System.out.println("boolexp found");
 		    :}
 		    |
 		    expression:l GREATER_THAN THAN expression:r
@@ -653,7 +657,6 @@ asmt_statement	::= field:f IS expression:v
                            }
                            // Infer type
                            String type = symrecord.getType(left);
-                           System.out.println(type);
                            DefinedType typeObj = symrecord.getTypeObj(type);
                            if(typeObj!=null&&symrecord.getType(type+"."+right).equals("Object")){ 
                                typeObj.setType(right, assType); 

@@ -1,6 +1,6 @@
 import java.io.*;
 import java_cup.runtime.*;
-
+import java.util.ArrayList;
 /**
  * WIP Compiler for Quant.
  * (Currently just attempts to generate
@@ -43,18 +43,26 @@ public class Compiler {
 
             Process p = Runtime.getRuntime().exec("javac "+intermediateFile);
             p.waitFor(); // Wait for the process to terminate
-            String command = "jar cfve "+target+".fun "+target+" "+target+".class *.class";
-            Process p2 = Runtime.getRuntime().exec(command);
-            p2.waitFor();
-            // delete the class files
+
             File dir = new File(System.getProperty("user.dir"));
+            ArrayList<String> classes = new ArrayList<String>();
             if(dir.isDirectory()){
                 String[] flist = dir.list();
                 for(String s : flist){
                     if(s.contains(".class"))
-                        new File(s).delete();
+                        {classes.add(s);}
                 }
             }
+
+            String command = "jar cfve "+target+".fun "+target;
+            for(String s: classes){
+                command += " "+s;
+            }
+            Process p2 = Runtime.getRuntime().exec(command);
+            p2.waitFor();
+            // delete the class files
+            for(String s : classes){ new File(s).delete(); }
+            // delete intermediate file
             File file = new File(intermediateFile);
             file.delete();
         } catch(Exception e){ e.printStackTrace(); }
