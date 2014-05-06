@@ -16,6 +16,7 @@ public class Expression implements Node{
 
     String initChain = "";
     String semRep = "";
+    String conversion = null;
     /** Constructs an Expression node.
       * @param l lhs of the expression
       * @param r rhs of the expression
@@ -25,9 +26,9 @@ public class Expression implements Node{
         lhs = l;
         rhs = r;
         String lc = l.getSemanticRepresentation();
-        String rc = r.getSemanticRepresentation();
+       // String rc = r.getSemanticRepresentation();
         if(lc.equals("STRING")) lc = "String";
-        if(rc.equals("STRING")) rc = "String";
+        //if(rc.equals("STRING")) rc = "String";
         semRep = lc;
         operation = o;
     }
@@ -42,8 +43,14 @@ public class Expression implements Node{
     public String[] translate(){
         String[] translation = new String[4];
         translation[0] = Translator.IN_PLACE;
-        translation[1] = lhs.translate()[1] + getOp() +
-            rhs.translate()[1] + ")";
+        if(rhs!=null)
+            translation[1] = lhs.translate()[1] + getOp() +
+                rhs.translate()[1] + ")";
+        else
+            translation[1] = lhs.translate()[1];
+        if(conversion!=null)
+            translation[1] = "factory.new NUMVAL(0,factory.new UNIT(\""+
+                conversion+"\", factory)).VALPLUS("+translation[1]+")";
         translation[2] = Translator.BEFORE;
         translation[3] = initChain;
         return translation;

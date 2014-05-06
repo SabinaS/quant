@@ -64,6 +64,7 @@ qmark	        = \?
 
 what		  = (What|what)
 
+converted	  = (converted)
 total		  = (total)
 of		  = (of)
 its		  = (Its |its |his |her )
@@ -110,6 +111,7 @@ identifier	   = [A-Za-z]+
 {times}		    { return getSymbol(sym.TIMES); }
 {divide}	    { return getSymbol(sym.DIVIDE); }
 {its}		    { return getSymbol(sym.ITS); }
+{converted}		{ return getSymbol(sym.CONVERTED); }
 {total}		    { return getSymbol(sym.TOTAL); }
 {of}		    { return getSymbol(sym.OF); }
 {if}		      { return getSymbol(sym.IF); }

@@ -13,6 +13,7 @@ public class OperativeStatement implements Node{
     /** Value on which to operate. */
     private Node value;
 
+    private String conversion;
     /**
      * Constructs an OperativeStatement node
      * for a given keyword and value.
@@ -23,6 +24,12 @@ public class OperativeStatement implements Node{
     public OperativeStatement(Node k, Node v){
         keyword = k;
         value = v;
+    }
+
+    public OperativeStatement(Node k, Node v, String c){
+        keyword = k;
+        value = v;
+        conversion = c;
     }
 
     // operative statement children are specified 
@@ -62,6 +69,7 @@ public class OperativeStatement implements Node{
                     result = result + valueTranslation[j+1];
                 }
                 valueTranslated = true;
+                
                 result = result + literal;
             }
         }
@@ -70,6 +78,7 @@ public class OperativeStatement implements Node{
             for(int i = 0; i < valueTranslation.length; i+=2)
                 result+=valueTranslation[i+1];
         }
+
 
         String[] translation = { Translator.IN_PLACE, result };
         return translation;
