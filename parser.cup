@@ -84,6 +84,7 @@ terminal TOTAL;
 terminal OF;
 terminal WHAT;
 terminal IS_C;
+terminal CONVERTED;
 
 terminal String IDENTIFIER;
 terminal String STRING_LITERAL;
@@ -790,7 +791,14 @@ expression	::= expression:l PLUS expression:r
 		    |
 		    LPAREN expression:v RPAREN
 		    {: RESULT = v; :}
-                    ;
+        |
+        expression:e CONVERTED TO complex_id:id
+        {:
+          Expression nexp = new Expression(e,null,0);
+          nexp.conversion = id.id;
+          RESULT = nexp;
+        :}
+        ;
 
 value		::= STRING_LITERAL:s
 		    {: RESULT = new StringConstant(s); :}
