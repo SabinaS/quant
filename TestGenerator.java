@@ -10,8 +10,8 @@ public class TestGenerator {
 
     public static void main(String[] args) {
         TestGenerator tg = new TestGenerator();
-        tg.genAllTests();
-        tg.genIterationTests();
+        // tg.genAllTests();
+        tg.genRelationalOpTests();
     }
 
     public BufferedWriter newBufferedWriter(String filename) {
@@ -234,28 +234,28 @@ public class TestGenerator {
     }
 
     public void genRelationalOpTests() {
-        String program_file = "relationOpTests";
-        String output_file = "relationOpResult";
+        String program_file = "relationalOpTests";
+        String output_file = "relationalOpResult";
         String program_text = "";
         String result = "";
 
-        program_text += "If (1 > 2) or (2 > 3), then print \"True\". Else, print \"False\".\n";
+        program_text += "If 1 > 2 or 2 > 3, then print \"True\". Else, print \"False\".\n";
         result += "False\n";
-        program_text += "If (1 < 2) or (2 > 3), then print \"True\". Else, print \"False\".\n";
+        program_text += "If 1 < 2 or 2 > 3, then print \"True\". Else, print \"False\".\n";
         result += "True\n";
-        program_text += "If (1 > 2) or (2 < 3), then print \"True\". Else, print \"False\".\n";
+        program_text += "If 1 > 2 or 2 < 3, then print \"True\". Else, print \"False\".\n";
         result += "True\n";
-        program_text += "If (1 > 2) or (2 < 3), then print \"True\". Else, print \"False\".\n";
+        program_text += "If 1 > 2 or 2 < 3, then print \"True\". Else, print \"False\".\n";
         result += "True\n";
-        program_text += "If (1 < 2) or (2 < 3), then print \"True\". Else, print \"False\".\n";
+        program_text += "If 1 < 2 or 2 < 3, then print \"True\". Else, print \"False\".\n";
         result += "True\n";
-        program_text += "If (1 > 2) and (2 > 3), then print \"True\". Else, print \"False\".\n";
+        program_text += "If 1 > 2 and 2 > 3, then print \"True\". Else, print \"False\".\n";
         result += "False\n";
-        program_text += "If (1 < 2) and (2 > 3), then print \"True\". Else, print \"False\".\n";
+        program_text += "If 1 < 2 and 2 > 3, then print \"True\". Else, print \"False\".\n";
         result += "False\n";
-        program_text += "If (1 > 2) and (2 < 3), then print \"True\". Else, print \"False\".\n";
+        program_text += "If 1 > 2 and 2 < 3, then print \"True\". Else, print \"False\".\n";
         result += "False\n";
-        program_text += "If (1 < 2) and (2 < 3), then print \"True\". Else, print \"False\".\n";
+        program_text += "If 1 < 2 and 2 < 3, then print \"True\". Else, print \"False\".\n";
         result += "True\n";
 
         this.write(program_file, program_text, output_file, result);
@@ -273,7 +273,7 @@ public class TestGenerator {
             int a = (int) (100*Math.random());
             int b = (int) (100*Math.random());
 
-            program_text += "If (" + a + " + " + b + " = " + (a + b) + "), then print \"True\". Else, print \"False\".\n";
+            program_text += "If " + a + " + " + b + " = " + (a + b) + ", then print \"True\". Else, print \"False\".\n";
             result += "True\n";
         }
 
@@ -282,17 +282,7 @@ public class TestGenerator {
             int a = (int) (100*Math.random());
             int b = (int) (100*Math.random());
 
-            program_text += "If (" + a + " + " + b + " equals " + (a + b) + "), then print \"True\". Else, print \"False\".\n";
-            result += "True\n";
-
-        }
-
-        for(int i = 0; i < 10; i++) {
-
-            int a = (int) (100*Math.random());
-            int b = (int) (100*Math.random());
-
-            program_text += "If (" + a + " + " + b + " is equal to " + (a + b) + "), then print \"True\". Else, print \"False\".\n";
+            program_text += "If " + a + " + " + b + " equals " + (a + b) + ", then print \"True\". Else, print \"False\".\n";
             result += "True\n";
 
         }
@@ -302,7 +292,17 @@ public class TestGenerator {
             int a = (int) (100*Math.random());
             int b = (int) (100*Math.random());
 
-            program_text += "If (" + a + " + " + b + " != " + (a + b) + "), then print \"True\". Else, print \"False\".\n";
+            program_text += "If " + a + " + " + b + " is equal to " + (a + b) + ", then print \"True\". Else, print \"False\".\n";
+            result += "True\n";
+
+        }
+
+        for(int i = 0; i < 10; i++) {
+
+            int a = (int) (100*Math.random());
+            int b = (int) (100*Math.random());
+
+            program_text += "If " + a + " + " + b + " != " + (a + b) + ", then print \"True\". Else, print \"False\".\n";
             result += "False\n";
         }
 
@@ -311,7 +311,7 @@ public class TestGenerator {
             int a = (int) (100*Math.random());
             int b = (int) (100*Math.random());
 
-            program_text += "If (" + a + " + " + b + " is not equal to " + (a + b) + "), then print \"True\". Else, print \"False\".\n";
+            program_text += "If " + a + " + " + b + " is not equal to " + (a + b) + ", then print \"True\". Else, print \"False\".\n";
             result += "False\n";
         }
 
