@@ -10,8 +10,8 @@ public class TestGenerator {
 
     public static void main(String[] args) {
         TestGenerator tg = new TestGenerator();
-        tg.genAsssignmentTests();
-        // tg.compileTest("assignmentTests");
+        tg.genAllTests();
+        tg.genIterationTests();
     }
 
     public BufferedWriter newBufferedWriter(String filename) {
@@ -47,16 +47,6 @@ public class TestGenerator {
             System.out.println("Exception occurred when writing to test program and output files");
         }
     }
-
-    // public void compileTest(String test_program_file) {
-    //     System.out.println("Executing: " + qnt_compile + " " + test_program_file + qnt_ext);
-    //     ProcessBuilder pb = new ProcessBuilder(qnt_compile, test_program_file + qnt_ext);
-    //     try {
-    //         Runtime.getRuntime().exec(qnt_compile + " " + test_program_file + qnt_ext);
-    //     } catch (Exception e) {
-    //         System.out.println("Exception occurred when trying to compile " + test_program_file + qnt_ext);
-    //     }
-    // }
 
     public void genAllTests() {
         this.genAsssignmentTests();

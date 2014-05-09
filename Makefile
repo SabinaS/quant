@@ -24,6 +24,14 @@ compiler:
 	javac -d ./ ./src/*.java
 	javac -cp $(cuprt):$(src):$(cup):$(home) Compiler.java sym.java parser.java QuantLexer.java
 
+test: jar
+	javac TestGenerator.java
+	java TestGenerator
+	mv *Tests.qnt exe
+	mv *Result.txt exe
+	./exe/compile *Tests.qnt
+	./exe/run *Tests.qnt > *Output.txt
+
 all: lexparse compiler
 
 clean:
@@ -33,3 +41,4 @@ clean:
 	rm -rf *.class
 	rm -rf ./src/*.class
 	rm -rf *.java~
+	rm -rf exe/*Tests.qnt exe/*Result.txt exe/*Output.txt exe/*Tests.fun
