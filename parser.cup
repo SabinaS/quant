@@ -641,7 +641,8 @@ asmt_statement	::= field:f IS expression:v
 		    :}
 		    |
 		    SET field:f TO expression:v
-		    {: if(v.getSemanticRepresentation().equals("STRING"))
+		    {: 
+		       if(v.getSemanticRepresentation().equals("STRING"))
 		           ((Variable) f).setType(SymbolRecord.STRING_TYPE);
 		       else
 		           ((Variable) f).setType(v.getSemanticRepresentation());
@@ -670,13 +671,14 @@ asmt_statement	::= field:f IS expression:v
                          
                            if(vv.wrappedValue.getClass().getName().equals("Quantity")){
                                Quantity vq = (Quantity) vv.wrappedValue;
-                               symrecord.unitMap.put(((Variable) f).getName(),((Unit)vq.unit).unit);
+                               if(vq.unit != null)
+                                   symrecord.unitMap.put(((Variable) f).getName(),((Unit)vq.unit).unit);
                            }
                        }
-
 		       RESULT = new AssignmentStatement(f,v,
 		                        Node.ASSMNT_MODE);
 		    :}
+
                     |
                     field:f IS type_ref:ref
 		    {:
