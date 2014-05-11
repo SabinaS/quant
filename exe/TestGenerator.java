@@ -2,25 +2,22 @@ import java.io.*;
 
 public class TestGenerator {
 
-    static final String qnt_jar_path ="../exe/";
-    static final String qnt_compile = "../exe/compile";
-    static final String qnt_run = "../exe/run";
-    static final String qnt_ext = ".qnt";
-    static final String test_path = "../test/";
-
     public static void main(String[] args) {
         TestGenerator tg = new TestGenerator();
-        // tg.genAllTests();
-        tg.genRelationalOpTests();
+        tg.genAllTests();
+        // tg.genComplexTest();
     }
 
     public BufferedWriter newBufferedWriter(String filename) {
         try {
 
           File file = new File(filename);
-          file.createNewFile();
 
-          FileWriter fw = new FileWriter(file.getAbsoluteFile());
+          if (!file.exists()) {
+            file.createNewFile();
+          }
+
+          FileWriter fw = new FileWriter(file.getAbsoluteFile(), true);
           BufferedWriter bw = new BufferedWriter(fw);
           return bw;
 
@@ -34,8 +31,8 @@ public class TestGenerator {
                                     String output_file, String output_text) {
 
         try {
-            BufferedWriter bw1 = this.newBufferedWriter(program_file + ".qnt");
-            BufferedWriter bw2 = this.newBufferedWriter(output_file + ".txt");
+            BufferedWriter bw1 = this.newBufferedWriter("tests.qnt");
+            BufferedWriter bw2 = this.newBufferedWriter("testResults.txt");
 
             bw1.write(program_text);
             bw2.write(output_text);
@@ -122,7 +119,7 @@ public class TestGenerator {
             program_text += "If " + compare1 + " is greater than "
                     + compare2 + ", then print \"Greater than\". Else, print \"Less than\".\n";
 
-            result += compare1 > compare2 ? "Greater than" : "Less than";
+            result += compare1 > compare2 ? "Greater than\n" : "Less than\n";
         }
 
         this.write(program_file, program_text, output_file, result);
@@ -318,5 +315,29 @@ public class TestGenerator {
 
         this.write(program_file, program_text, output_file, result);
     }
+
+    public void genComplexTest() {
+        String program_file = "complexTests";
+        String output_file = "complexResult";
+        String program_text = "";
+        String result = "";
+
+        program_text +=
+                    "A rectangle has width, height, and area.\n"
+                    + "A is a rectangle.  A’s width is 2 inches.  A’s height is 10 inches.\n"
+                    + "B is a rectangle. B’s width is 4 inches. B’s height is 2 inches.\n"
+                    + "A’s area is A’s width times A’s height.\n"
+                    + "B’s area is B’s width times B’s height.\n"
+                    + "While B’s area is less than A’s area, \n"
+                    + "     set B’s height to B’s height plus 1,\n"
+                    + "     set B’s area to B’s width times B’s height,\n"
+                    + "     and print B’s area.\n"
+                    + "Print B’s height.\n";
+
+        result += "...";
+
+        this.write(program_file, program_text, output_file, result);
+    }
+
 
 }
