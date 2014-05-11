@@ -97,6 +97,7 @@ comment		   = \([^\(\)]*\)
 
 whitespace	   = [ \n\t]
 
+the                = (the)
 identifier	   = [A-Za-z]+
 
 %%
@@ -136,6 +137,7 @@ identifier	   = [A-Za-z]+
 {to}		      { return getSymbol(sym.TO); }
 {than}		    { return getSymbol(sym.THAN); }
 {there}		    { return getSymbol(sym.THERE); }
+{the}		    { return getSymbol(sym.THE); }
 {are}         { return getSymbol(sym.ARE); }
 {not}		      { return getSymbol(sym.NOT); }
 {lparen}	    { return getSymbol(sym.LPAREN); }
