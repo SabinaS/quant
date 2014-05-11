@@ -8,7 +8,10 @@ jflex = ./lib/jflex-1.5.0.jar
 cuprt = ./lib/java-cup-11b-runtime.jar
 home = ./
 src = ./src/*
-
+tests = tests.qnt
+tests_runnable = tests.fun
+test_results = testResults.txt
+test_output = testOutput.txt
 
 jar: lexparse compiler
 	cp *.class ./exe
@@ -24,6 +27,14 @@ compiler:
 	javac -d ./ ./src/*.java
 	javac -cp $(cuprt):$(src):$(cup):$(home) Compiler.java sym.java parser.java QuantLexer.java
 
+test: jar
+	cd exe && javac TestGenerator.java
+	cd exe && java TestGenerator
+	cd exe && ./compile $(tests) 
+	cd exe && ./run $(tests_runnable) > $(test_output)
+	cd exe && javac TestChecker.java
+	cd exe && java TestChecker $(test_output) $(test_results)
+
 all: lexparse compiler
 
 clean:
@@ -33,3 +44,4 @@ clean:
 	rm -rf *.class
 	rm -rf ./src/*.class
 	rm -rf *.java~
+	rm -rf exe/$(tests) exe/$(test_results) exe/$(test_output) exe/*.fun
