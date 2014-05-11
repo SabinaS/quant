@@ -85,6 +85,7 @@ terminal OF;
 terminal WHAT;
 terminal IS_C;
 terminal CONVERTED;
+terminal THE;
 
 terminal String IDENTIFIER;
 terminal String STRING_LITERAL;
